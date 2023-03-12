@@ -18,7 +18,7 @@ public class Test {
         scene.add(rect);
         r.setWidth(100);
         r.resize();*/
-        ArrayList<ShapeObject> objects = new ArrayList<>();
+       /* ArrayList<ShapeObject> objects = new ArrayList<>();
 
         Timer t1 = new Timer(100, actionEvent -> {
             for(int i = 0; i < 5; i++) {
@@ -37,7 +37,12 @@ public class Test {
         });
 
         t1.start();
-        t2.start();
+        t2.start();*/
+
+        scene.addMouseEventListener(glMouseEvent -> {
+            if(glMouseEvent.isButtonDown(4))
+                System.out.println(glMouseEvent.getButton());
+        });
 
         scene.start();
         /*while (true){

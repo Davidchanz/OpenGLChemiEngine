@@ -17,12 +17,13 @@ public class Input {
 	private GLFWMouseButtonCallback mouseButtons;
 	private GLFWScrollCallback mouseScroll;
 	private static int pressedButton;
+	private static int lastPressedButton;
 	
 	public Input() {
 		pressedButton = -1;
 		keyboard = new GLFWKeyCallback() {
 			public void invoke(long window, int key, int scancode, int action, int mods) {
-				if(key != -1)//TODO what?
+				if(key != -1)//TODO what? key unknown
 					keys[key] = (action != GLFW.GLFW_RELEASE);
 			}
 		};
@@ -54,7 +55,7 @@ public class Input {
 	}
 	
 	public static boolean isButtonDown(int button) {
-		if(button == -1)
+		if(button < 0 || button >= buttons.length)
 			return false;
 		return buttons[button];
 	}
@@ -99,8 +100,12 @@ public class Input {
 	}
 
 	public static int getButton() {
-		int t = pressedButton;
+		lastPressedButton = pressedButton;
 		pressedButton = -1;
-		return t;
+		return lastPressedButton;
+	}
+
+	public static int getLastPressedButton() {
+		return lastPressedButton;
 	}
 }
