@@ -18,15 +18,7 @@ public abstract class GameObject extends EngineObject implements Resize {
 	private boolean isTextured;
 	private Color color;
 
-	public boolean isResized() {
-		return isResized;
-	}
-
-	public void setResized(boolean resized) {
-		isResized = resized;
-	}
-
-	private boolean isResized;
+	private boolean isChanged;
 
 	public Color getColor() {
 		return color;
@@ -36,10 +28,11 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.color = color;
 		if(this.mesh != null)
 			this.mesh.setColor(color);
+		this.isChanged = true;
 	}
 
 	public GameObject(){
-		this.isResized = false;
+		this.isChanged = false;
 		this.normal = new Vector3f(0,0,0);
 	}
 
@@ -58,10 +51,11 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.scale = scale;
 		this.mesh = mesh;
 		this.center = new Vector3f(0,0,0);
+		this.isChanged = true;
 	}
 
 	public void build(){
-		this.isResized = false;
+		this.isChanged = false;
 		//this.normal = new Vector3f(0,0,0);
 		this.mesh.create();
 		this.isTextured = this.mesh.isTextured();
@@ -162,5 +156,13 @@ public abstract class GameObject extends EngineObject implements Resize {
 
 	public void setHeight(float height) {
 		this.height = height;
+	}
+
+	public boolean isChanged() {
+		return isChanged;
+	}
+
+	public void setChanged(boolean changed) {
+		isChanged = changed;
 	}
 }

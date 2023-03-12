@@ -8,35 +8,45 @@ import org.engine.io.Window;
 import org.engine.listeners.SceneMouseButtonPressedListener;
 import org.engine.maths.Vector3f;
 import org.engine.objects.Camera;
+import org.engine.objects.GameObject;
 import org.engine.utils.Color;
 import org.engine.objects.ShapeObject;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Scene implements Runnable{
     public static int WIDTH, HEIGHT;
-    public Thread game;
-    public Window window;
-    public Renderer renderer;
-    public Shader shader;
-    public List<ShapeObject> gameObjects;
-    public List<ShapeObject> addObjects;
-    public List<ShapeObject> removeObjects;
-    public List<SceneMouseButtonPressedListener> mouseButtonPressedListenersListeners;
-    public Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
-    private Color backgroundColor;
+    private Thread game;
+    private Window window;
+    private Renderer renderer;
+    private Shader shader;
+    private final List<ShapeObject> gameObjects;
+    private final List<ShapeObject> addObjects;
+    private final List<ShapeObject> removeObjects;
+    private final List<ShapeObject> removeBuffer;
+    private final List<ShapeObject> addBuffer;
+    private final List<SceneMouseButtonPressedListener> mouseButtonPressedListenersListeners;
+
+
+    private Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
+    private final Color backgroundColor;
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     public Scene(int w, int h, Color background){
         WIDTH = w;
         HEIGHT = h;
         this.backgroundColor = background;
         this.gameObjects = new ArrayList<>();
-        this.addObjects = new ArrayList<>();
-        this.removeObjects = new ArrayList<>();
+        this.addObjects = Collections.synchronizedList(new ArrayList<>());
+        this.removeObjects = Collections.synchronizedList(new ArrayList<>());
+        this.removeBuffer = Collections.synchronizedList(new ArrayList<>());
+        this.addBuffer = Collections.synchronizedList(new ArrayList<>());
         this.mouseButtonPressedListenersListeners = new ArrayList<>();
-        this.start();
     }
 
     public void start() {
@@ -69,7 +79,15 @@ public class Scene implements Runnable{
     }
 
     public void add(ShapeObject object){
-        this.addObjects.add(object);
+        if(!this.busy.get()) {
+            this.busy.set(true);
+            this.addObjects.addAll(this.addBuffer);
+            this.addBuffer.clear();
+            this.addObjects.add(object);
+            this.busy.set(false);
+        }else {
+            this.addBuffer.add(object);
+        }
     }
 
     public void addAll(List<ShapeObject> objects){
@@ -77,7 +95,15 @@ public class Scene implements Runnable{
     }
 
     public void remove(ShapeObject object){
-        this.removeObjects.add(object);
+        if(!this.busy.get()) {
+            this.busy.set(true);
+            this.removeObjects.addAll(this.removeBuffer);
+            this.removeBuffer.clear();
+            this.removeObjects.add(object);
+            this.busy.set(false);
+        }else {
+            this.removeBuffer.add(object);
+        }
     }
 
     public void run() {
@@ -97,20 +123,37 @@ public class Scene implements Runnable{
         close();
     }
 
-    private synchronized void ifRemove() {
-        while (!this.removeObjects.isEmpty()){
-            this.gameObjects.remove(this.removeObjects.get(0));
-            if(this.removeObjects.get(0) != null)this.removeObjects.get(0).destroy();
-            this.removeObjects.remove(0);
-        }
+    private void ifRemove() {
+        if(this.busy.get())
+            return;
+        this.busy.set(true);
+        this.removeObjects.addAll(this.removeBuffer);
+        this.removeBuffer.clear();
+        this.gameObjects.removeAll(this.removeObjects);
+        this.removeObjects.forEach(ShapeObject::destroy);
+        this.removeObjects.clear();
+        this.busy.set(false);
+        /*while (!this.removeObjects.isEmpty()){
+            if(this.removeObjects.get(0) != null) {
+                this.gameObjects.remove(this.removeObjects.get(0));
+                this.removeObjects.get(0).destroy();
+                this.removeObjects.remove(0);
+            }
+        }*/
     }
 
-    private synchronized void ifAdd() {
-        while (!this.addObjects.isEmpty()){
+    private void ifAdd() {
+        if(this.busy.get())
+            return;
+        this.busy.set(true);
+        this.gameObjects.addAll(this.addObjects);
+        this.addObjects.clear();
+        this.busy.set(false);
+        /*while (!this.addObjects.isEmpty()){
             this.gameObjects.add(this.addObjects.get(0));
-            if(this.addObjects.get(0) != null)this.addObjects.get(0).build();
+            //if(this.addObjects.get(0) != null)this.addObjects.get(0).build();
             this.addObjects.remove(0);
-        }
+        }*/
     }
 
     private synchronized void update() {
@@ -119,13 +162,36 @@ public class Scene implements Runnable{
     }
 
     private synchronized void render() {
-        this.gameObjects.forEach(shapeObject -> {
-            shapeObject.body.forEach(object -> {
-                if(object.isResized())
-                    object.build();
-                renderer.renderMesh(object, camera);
+        /*synchronized (this.gameObjects) {
+            Arrays.stream(this.gameObjects.toArray(new ShapeObject[0])).toList().forEach(shapeObject -> {
+                //synchronized (shapeObject) {
+                //shapeObject.addAll(shapeObject.newObjects);
+                //shapeObject.newObjects.clear();
+                // }
+                if(shapeObject == null)
+                    return;
+                synchronized (shapeObject) {
+                    Arrays.stream(shapeObject.body.toArray(new GameObject[0])).toList().forEach(object -> {
+                        if (object.isChanged())
+                            object.build();
+                        renderer.renderMesh(object, camera);
+                    });
+                }
             });
-        });
+        }*/
+        this.busy.set(true);
+            this.gameObjects.forEach(shapeObject -> {
+                //synchronized (shapeObject) {
+                //shapeObject.addAll(shapeObject.newObjects);
+                //shapeObject.newObjects.clear();
+                // }
+                    shapeObject.body.forEach(object -> {
+                        if (object.isChanged())
+                            object.build();
+                        renderer.renderMesh(object, camera);
+                    });
+            });
+        this.busy.set(false);
         window.swapBuffers();
     }
 

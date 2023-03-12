@@ -22,7 +22,8 @@ public class Input {
 		pressedButton = -1;
 		keyboard = new GLFWKeyCallback() {
 			public void invoke(long window, int key, int scancode, int action, int mods) {
-				keys[key] = (action != GLFW.GLFW_RELEASE);
+				if(key != -1)//TODO what?
+					keys[key] = (action != GLFW.GLFW_RELEASE);
 			}
 		};
 		

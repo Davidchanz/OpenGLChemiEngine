@@ -107,6 +107,6 @@ public class Rectangle extends GameObject {
                 2, 3, 0,
         }, this.getColor());
         this.ini(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), mesh);
-        this.setResized(true);
+        this.setChanged(true);
     }
 }
