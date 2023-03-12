@@ -1,9 +1,14 @@
 package org.engine.objects;
 
 import org.engine.maths.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import org.engine.io.Input;
+
+import java.nio.DoubleBuffer;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
 	private Vector3f position, rotation;
@@ -12,15 +17,26 @@ public class Camera {
 	private boolean firstMouse = true;
 	private double yaw;
 	private double pitch;
+	private long window;
 
 	public Camera(Vector3f position, Vector3f rotation) {
 		this.position = position;
 		this.rotation = rotation;
+		this.window = -1;
 	}
 	
 	public void update() {
-		newMouseX = Input.getMouseX();
-		newMouseY = Input.getMouseY();
+		/*if(window != -1) {
+			DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
+			DoubleBuffer yBuffer = BufferUtils.createDoubleBuffer(1);
+			glfwGetCursorPos(window, xBuffer, yBuffer);
+			newMouseX = xBuffer.get(0);
+			newMouseY = yBuffer.get(0);
+		}
+		else {*/
+			newMouseX = Input.getMouseX();
+			newMouseY = Input.getMouseY();
+		//}
 
 		float x = (float) Math.sin(Math.toRadians(rotation.getY())) * moveSpeed;
 		float z = (float) Math.cos(Math.toRadians(rotation.getY())) * moveSpeed;
@@ -85,4 +101,9 @@ public class Camera {
 	public Vector3f getRotation() {
 		return rotation;
 	}
+
+	public void setWindow(long window) {
+		this.window = window;
+	}
+
 }

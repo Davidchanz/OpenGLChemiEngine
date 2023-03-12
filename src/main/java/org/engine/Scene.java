@@ -1,12 +1,14 @@
 package org.engine;
 
+import org.engine.events.GLKeyEvent;
 import org.engine.events.GLMouseEvent;
 import org.engine.graphics.Renderer;
 import org.engine.graphics.Shader;
 import org.engine.io.Input;
 import org.engine.io.Window;
-import org.engine.listeners.SceneCloseListener;
-import org.engine.listeners.SceneMouseButtonPressedListener;
+import org.engine.listeners.CloseListener;
+import org.engine.listeners.KeyPressedListener;
+import org.engine.listeners.MouseButtonPressedListener;
 import org.engine.maths.Vector3f;
 import org.engine.objects.Camera;
 import org.engine.utils.Color;
@@ -14,7 +16,6 @@ import org.engine.objects.ShapeObject;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,15 +31,20 @@ public class Scene implements Runnable{
     private final List<ShapeObject> removeObjects;
     private final List<ShapeObject> removeBuffer;
     private final List<ShapeObject> addBuffer;
-    private final List<SceneMouseButtonPressedListener> sceneMouseButtonPressedListeners;
-    private final List<SceneCloseListener> sceneCloseListeners;
-    private Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
+    private final List<MouseButtonPressedListener> mouseButtonPressedListeners;
+    private final List<CloseListener> closeListeners;
+    private final List<KeyPressedListener> keyPressedListeners;
+    private Camera camera;
     private final Color backgroundColor;
     private final AtomicBoolean busy = new AtomicBoolean(false);
+    private boolean isCursorDisabled;
 
     public Scene(int w, int h, Color background){
         WIDTH = w;
         HEIGHT = h;
+
+        this.isCursorDisabled = false;
+        this.setCamera(new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0)));
         this.backgroundColor = background;
         this.gameObjects = new ArrayList<>();
         this.addObjects = Collections.synchronizedList(new ArrayList<>());
@@ -46,8 +52,9 @@ public class Scene implements Runnable{
         this.removeBuffer = Collections.synchronizedList(new ArrayList<>());
         this.addBuffer = Collections.synchronizedList(new ArrayList<>());
 
-        this.sceneMouseButtonPressedListeners = new ArrayList<>();
-        this.sceneCloseListeners = new ArrayList<>();
+        this.mouseButtonPressedListeners = new ArrayList<>();
+        this.closeListeners = new ArrayList<>();
+        this.keyPressedListeners = new ArrayList<>();
     }
 
     public void start() {
@@ -62,6 +69,7 @@ public class Scene implements Runnable{
         this.window.setBackgroundColor(this.backgroundColor);
         this.window.create();
         this.shader.create();
+        this.camera.setWindow(this.window.getWindow());
     }
 
     public void add(ShapeObject object){
@@ -99,17 +107,28 @@ public class Scene implements Runnable{
             ifRemove();
             update();
             render();
-            if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
-            this.sceneMouseButtonPressedListeners.forEach(sceneMouseListener -> {
-                var tmp = new Vector3f((float) Input.getMouseX(), (float) Input.getMouseY(), 0);
-                var mousePos = toSceneDimension(tmp);
-                if(Input.isButtonDown(Input.getButton())) {
-                    sceneMouseListener.listen(new GLMouseEvent(Input.getLastPressedButton(), mousePos.getX(), mousePos.getY()));
-                }
-            });
+            eventListeners();
         }
         close();
-        this.sceneCloseListeners.forEach(SceneCloseListener::listen);
+        this.closeListeners.forEach(CloseListener::listen);
+    }
+
+    private void eventListeners() {
+        if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
+        if(Input.isButtonDown(Input.getButton())) {
+            var tmp = new Vector3f((float) Input.getMouseX(), (float) Input.getMouseY(), 0);
+            var mousePos = toSceneDimension(tmp);
+            var button = Input.getLastPressedButton();
+            this.mouseButtonPressedListeners.forEach(mouseListener -> {
+                mouseListener.listen(new GLMouseEvent(button, mousePos.getX(), mousePos.getY()));
+            });
+        }
+        if(Input.isKeyDown(Input.getKey())){
+            var key = Input.getLastPressedKey();
+            this.keyPressedListeners.forEach(keyPressedListener -> {
+                keyPressedListener.listen(new GLKeyEvent(key));
+            });
+        }
     }
 
     private void ifRemove() {
@@ -135,7 +154,7 @@ public class Scene implements Runnable{
 
     private synchronized void update() {
         window.update();
-        //camera.update(/*this.gameObjects.get(0).body.get(0)*/);
+        if(Input.isIsWindowFocused())camera.update(/*this.gameObjects.get(0).body.get(0)*/);//TODO
     }
 
     private synchronized void render() {
@@ -181,11 +200,19 @@ public class Scene implements Runnable{
         return new Vector3f(point.getX() - WIDTH/2f, HEIGHT/2f - point.getY(), point.getZ());
     }
 
-    public void addMouseEventListener(SceneMouseButtonPressedListener listener){
-        this.sceneMouseButtonPressedListeners.add(listener);
+    public void addMouseEventListener(MouseButtonPressedListener listener){
+        this.mouseButtonPressedListeners.add(listener);
     }
 
-    public void addSceneCloseListener(SceneCloseListener listener){
-        this.sceneCloseListeners.add(listener);
+    public void addCloseListener(CloseListener listener){
+        this.closeListeners.add(listener);
+    }
+
+    public void addKeyPressedListener(KeyPressedListener listener){
+        this.keyPressedListeners.add(listener);
+    }
+
+    public synchronized void setCamera(Camera camera){
+        this.camera = camera;
     }
 }

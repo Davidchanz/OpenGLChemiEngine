@@ -1,5 +1,5 @@
 package org.engine.listeners;
 
-public interface SceneCloseListener {
+public interface CloseListener {
     void listen();
 }

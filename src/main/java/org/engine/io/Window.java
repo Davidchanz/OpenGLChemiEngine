@@ -2,11 +2,11 @@ package org.engine.io;
 
 import org.engine.utils.Color;
 import org.engine.maths.Matrix4f;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Window {
 	private int width, height;
@@ -74,6 +74,7 @@ public class Window {
 		GLFW.glfwSetMouseButtonCallback(window, input.getMouseButtonsCallback());
 		GLFW.glfwSetScrollCallback(window, input.getMouseScrollCallback());
 		GLFW.glfwSetWindowSizeCallback(window, sizeCallback);
+		GLFW.glfwSetWindowFocusCallback(window, input.getWindowFocus());
 	}
 	
 	public void update() {
@@ -128,7 +129,7 @@ public class Window {
 	}
 	
 	public void mouseState(boolean lock) {
-		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, lock ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(window, GLFW.GLFW_CURSOR, lock ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
 	}
 
 	public int getWidth() {
