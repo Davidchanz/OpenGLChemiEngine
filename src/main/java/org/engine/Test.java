@@ -23,7 +23,7 @@ public class Test {
         r.resize();
 
         Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
-        scene.setCamera(camera);
+        //scene.setCamera(camera);
 
         Cube c = new Cube("", 1, new Vector3f(0,0,0));
         scene.add(c);

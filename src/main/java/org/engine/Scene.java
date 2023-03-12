@@ -34,17 +34,16 @@ public class Scene implements Runnable{
     private final List<MouseButtonPressedListener> mouseButtonPressedListeners;
     private final List<CloseListener> closeListeners;
     private final List<KeyPressedListener> keyPressedListeners;
-    private Camera camera;
+    private Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
     private final Color backgroundColor;
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private boolean isCursorDisabled;
+    private boolean is3DCameraEnable;
 
     public Scene(int w, int h, Color background){
         WIDTH = w;
         HEIGHT = h;
 
-        this.isCursorDisabled = false;
-        this.setCamera(new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0)));
+        this.is3DCameraEnable = false;
         this.backgroundColor = background;
         this.gameObjects = new ArrayList<>();
         this.addObjects = Collections.synchronizedList(new ArrayList<>());
@@ -154,7 +153,7 @@ public class Scene implements Runnable{
 
     private synchronized void update() {
         window.update();
-        if(Input.isIsWindowFocused())camera.update(/*this.gameObjects.get(0).body.get(0)*/);//TODO
+        if(Input.isIsWindowFocused() && this.is3DCameraEnable)camera.update(/*this.gameObjects.get(0).body.get(0)*/);//TODO
     }
 
     private synchronized void render() {
@@ -214,5 +213,6 @@ public class Scene implements Runnable{
 
     public synchronized void setCamera(Camera camera){
         this.camera = camera;
+        this.is3DCameraEnable = true;
     }
 }
