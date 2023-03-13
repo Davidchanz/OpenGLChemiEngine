@@ -15,9 +15,7 @@ public abstract class GameObject extends EngineObject implements Resize {
 	private Vector3f normal;
 	private Mesh mesh;
 	private ShapeObject parent;
-	private boolean isTextured;
 	private Color color;
-
 	private boolean isChanged;
 
 	public Color getColor() {
@@ -42,7 +40,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.rotation = rotation;
 		this.scale = scale;
 		this.mesh = mesh;
-
 		this.center = new Vector3f(0,0,0);
 	}
 	public void ini(Vector3f position, Vector3f rotation, Vector3f scale, Mesh mesh) {
@@ -58,7 +55,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.isChanged = false;
 		//this.normal = new Vector3f(0,0,0);
 		this.mesh.create();
-		this.isTextured = this.mesh.isTextured();
 	}
 
 	public void build(Vector3f position, Vector3f rotation, Vector3f scale, Vector3f normal, Mesh mesh) {
@@ -69,7 +65,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.mesh = mesh;
 		this.center = new Vector3f(0,0,0);
 		this.mesh.create();
-		this.isTextured = this.mesh.isTextured();
 	}
 
 	public void build(Vector3f position, Vector3f rotation, Vector3f scale, Mesh mesh) {
@@ -80,7 +75,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 		this.mesh = mesh;
 		this.center = new Vector3f(0,0,0);
 		this.mesh.create();
-		this.isTextured = this.mesh.isTextured();
 	}
 
 	public void destroy(){
@@ -136,10 +130,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 
 	public void setNormal(Vector3f normal) {
 		this.normal = normal;
-	}
-
-	public boolean isTextured() {
-		return isTextured;
 	}
 
 	public float getWidth() {

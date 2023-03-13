@@ -37,13 +37,13 @@ public class Scene implements Runnable{
     private Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
     private final Color backgroundColor;
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private boolean is3DCameraEnable;
+    public static boolean is3DCameraEnable;
 
     public Scene(int w, int h, Color background){
         WIDTH = w;
         HEIGHT = h;
 
-        this.is3DCameraEnable = false;
+        is3DCameraEnable = false;
         this.backgroundColor = background;
         this.gameObjects = new ArrayList<>();
         this.addObjects = Collections.synchronizedList(new ArrayList<>());
@@ -213,6 +213,6 @@ public class Scene implements Runnable{
 
     public synchronized void setCamera(Camera camera){
         this.camera = camera;
-        this.is3DCameraEnable = true;
+        is3DCameraEnable = true;
     }
 }

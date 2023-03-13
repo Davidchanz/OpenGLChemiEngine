@@ -1,5 +1,6 @@
 package org.engine.io;
 
+import org.engine.Scene;
 import org.lwjgl.glfw.*;
 
 public class Input {
@@ -55,8 +56,10 @@ public class Input {
 		windowFocus = new GLFWWindowFocusCallback() {
 			@Override
 			public void invoke(long l, boolean b) {
-				GLFW.glfwSetInputMode(l, GLFW.GLFW_CURSOR, b ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
-				isWindowFocused = b;
+				if(Scene.is3DCameraEnable){
+					GLFW.glfwSetInputMode(l, GLFW.GLFW_CURSOR, b ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
+					isWindowFocused = b;
+				}
 			}
 		};
 	}
@@ -123,8 +126,6 @@ public class Input {
 	}
 
 	public static int getLastPressedButton() {
-		lastPressedButton = pressedButton;
-		pressedButton = -1;
 		return lastPressedButton;
 	}
 

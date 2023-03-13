@@ -16,28 +16,30 @@ public class Test {
     public static void main(String[] args) {
         Scene scene = new Scene(800, 800, Color.ALICEBLUE);
         ShapeObject rect = new ShapeObject();
-        var r = new Rectangle(50, new Vector3f(0,0,0), Color.CYAN);
+        var r = new Rectangle(10, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/ant.png");
         rect.add(r);
-        //scene.add(rect);
-        r.setWidth(100);
+        //rect.add(new Rectangle(10, new Vector3f(110,0,0), Color.WHITE, "src/main/resources/textures/1.png"));
+        scene.add(rect);
+        //r.setWidth(100);
         r.resize();
 
         Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
-        //scene.setCamera(camera);
+        scene.setCamera(camera);
 
-        Cube c = new Cube("", 1, new Vector3f(0,0,0));
-        scene.add(c);
+        /*Cube c = new Cube("", 1, new Vector3f(0,0,0));
+        scene.add(c);*/
         //ArrayList<ShapeObject> objects = new ArrayList<>();
 
-        /*Timer t1 = new Timer(100, actionEvent -> {
-           *//* for(int i = 0; i < 5; i++) {
+        Timer t1 = new Timer(100, actionEvent -> {
+            /*for(int i = 0; i < 5; i++) {
                 ShapeObject o = new ShapeObject();
                 o.add(new Rectangle(5, new Vector3f(new Random().nextFloat(100f)-50,new Random().nextFloat(100f) - 50,0), Color.RED));
                 scene.add(o);
                 objects.add(o);
-            }*//*
-            rect.move(new Vector3f(1,0,0));
-        });*/
+            }
+            rect.move(new Vector3f(1,0,0));*/
+            rect.rotateX(new Vector3f(0,0,1));
+        });
 
         /*Timer t2 = new Timer(100, actionEvent -> {
             for(int i = 0; i < 5; i++) {
@@ -46,10 +48,11 @@ public class Test {
             }
         });*/
 
-        //t1.start();
+        t1.start();
         //t2.start();
 
         scene.addMouseEventListener(glMouseEvent -> {
+            System.out.println(glMouseEvent.getButton());
             if(glMouseEvent.isButtonDown(0))
                 System.out.println("qqqqqq");
         });
@@ -59,16 +62,16 @@ public class Test {
                 System.out.println("wwwwwwwww");
         });
 
-        scene.addKeyPressedListener(glKeyEvent -> {
+       /* scene.addKeyPressedListener(glKeyEvent -> {
             switch (glKeyEvent.getKey()){
                 case GLKeyEvent.W -> c.move(new Vector3f(0,1,0));
                 case GLKeyEvent.A -> c.move(new Vector3f(-1,0,0));
                 case GLKeyEvent.S -> c.move(new Vector3f(0,-1,0));
                 case GLKeyEvent.D -> c.move(new Vector3f(1,0,0));
             }
-            /*if(glKeyEvent.getKey() == GLKeyEvent.A)
-                System.out.println("A");*/
-        });
+            *//*if(glKeyEvent.getKey() == GLKeyEvent.A)
+                System.out.println("A");*//*
+        });*/
 
         scene.addKeyPressedListener(glKeyEvent -> {
             if(glKeyEvent.getKey() == GLKeyEvent.B)

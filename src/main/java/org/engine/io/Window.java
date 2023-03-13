@@ -52,6 +52,9 @@ public class Window {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		createCallbacks();
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GLFW.glfwShowWindow(window);
 		

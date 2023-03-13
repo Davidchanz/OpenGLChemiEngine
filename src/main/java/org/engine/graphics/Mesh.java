@@ -65,16 +65,14 @@ public class Mesh {
 		
 		pbo = storeData(positionBuffer, 0, 3);
 
-		//if(this.isTextured) {
-			FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(vertices.length * 2);
-			float[] textureData = new float[vertices.length * 2];
-			for (int i = 0; i < vertices.length; i++) {
-				textureData[i * 2] = vertices[i].getTextureCoord().getX();
-				textureData[i * 2 + 1] = vertices[i].getTextureCoord().getY();
-			}
-			textureBuffer.put(textureData).flip();
-			tbo = storeData(textureBuffer, 2, 2);
-		//}
+		FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(vertices.length * 2);
+		float[] textureData = new float[vertices.length * 2];
+		for (int i = 0; i < vertices.length; i++) {
+			textureData[i * 2] = vertices[i].getTextureCoord().getX();
+			textureData[i * 2 + 1] = vertices[i].getTextureCoord().getY();
+		}
+		textureBuffer.put(textureData).flip();
+		tbo = storeData(textureBuffer, 2, 2);
 		/////////////color
 
 		FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
