@@ -114,7 +114,7 @@ public class Mesh {
 		
 		GL30.glDeleteVertexArrays(vao);
 		
-		if(this.material != null)material.destroy();
+		material.destroy();
 	}
 
 	public Vertex[] getVertices() {

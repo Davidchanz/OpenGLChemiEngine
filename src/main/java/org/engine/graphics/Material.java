@@ -1,10 +1,10 @@
 package org.engine.graphics;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import org.engine.Scene;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
@@ -16,12 +16,12 @@ public class Material {
 	protected Texture texture;
 	protected float width, height;
 	protected int textureID;
-	
+	protected static final TreeMap<String, Material> textures = new TreeMap<>();
 	public Material(String path) {
 		this.path = path;
 	}
 	public static EmptyMaterial getEmpty(){
-		return new EmptyMaterial("/textures/empty.png");
+		return new EmptyMaterial();
 	}
 	
 	public void create() {
@@ -48,8 +48,28 @@ public class Material {
 		}catch (Exception e){
 			System.out.println(Arrays.toString(e.getStackTrace()));
 		}*/
+		Material material = textures.get(path);
+		if(material == null){
+			try (FileInputStream f = new FileInputStream(path)){
+				this.texture = TextureLoader.getTexture(path.split("[.]")[1], Objects.requireNonNull(f), GL11.GL_NEAREST);
+				this.width = texture.getWidth();
+				this.height = texture.getHeight();
+				this.textureID = texture.getTextureID();
+				textures.put(path, this);
+			} catch (Exception e) {
+				System.err.println("Can't find texture at " + path);
+				material = getEmpty();
+				this.textureID = material.getTextureID();
+				this.width = material.getWidth();
+				this.height = material.getHeight();
+			}
+		}else {
+			this.textureID = material.getTextureID();
+			this.width = material.getWidth();
+			this.height = material.getHeight();
+		}
 
-		try (FileInputStream f = new FileInputStream(path)){
+		/*try (FileInputStream f = new FileInputStream(path)){
 			this.texture = TextureLoader.getTexture(path.split("[.]")[1], Objects.requireNonNull(f), GL11.GL_NEAREST);
 			this.width = texture.getWidth();
 			this.height = texture.getHeight();
@@ -60,11 +80,11 @@ public class Material {
 			this.textureID = material.getTextureID();
 			this.width = material.getWidth();
 			this.height = material.getHeight();
-		}
+		}*/
 	}
 	
 	public void destroy() {
-		GL13.glDeleteTextures(textureID);
+		//GL13.glDeleteTextures(textureID);//TODO
 	}
 
 	public float getWidth() {

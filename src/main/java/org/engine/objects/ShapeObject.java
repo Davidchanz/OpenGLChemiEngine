@@ -44,7 +44,7 @@ public class ShapeObject extends EngineObject {
         this.setPosition(Vector3f.add(this.getPosition(), dir));//move position on dir
         //this.center = Vector3f.add(this.center, dir);//move center on dir TODO
         for(var i: this.body){
-            i.setPosition(dir);//move all AbstractShapes
+            i.setPosition(Vector3f.add(i.getPosition(), dir));//move all AbstractShapes
         }
     }
     public void add(GameObject o){

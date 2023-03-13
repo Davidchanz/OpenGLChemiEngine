@@ -9,6 +9,7 @@ import org.engine.io.Window;
 import org.engine.maths.Matrix4f;
 import org.engine.objects.Camera;
 import org.engine.objects.GameObject;
+import org.lwjgl.system.MemoryUtil;
 
 public class Renderer {
 	private Shader shader;
@@ -20,7 +21,7 @@ public class Renderer {
 	}
 	
 	public void renderMesh(GameObject object, Camera camera) {
-		GL30.glBindVertexArray(object.getMesh().getVAO());
+		GL30.glBindVertexArray(object.getMesh().getVAO());//
 		GL30.glEnableVertexAttribArray(0);
 		GL30.glEnableVertexAttribArray(1);
 		GL30.glEnableVertexAttribArray(2);
@@ -34,14 +35,21 @@ public class Renderer {
 		//activeTextures(object);
 
 		shader.bind();
-		shader.setUniform("model", Matrix4f.transform(object.getPosition(), object.getRotation(), object.getScale()));
-		shader.setUniform("view", Matrix4f.view(camera.getPosition(), camera.getRotation()));
-		shader.setUniform("projection", window.getProjectionMatrix());
-		shader.setUniform("forward", Matrix4f.translate(object.getParent().getPosition().neg()));
-		shader.setUniform("back", Matrix4f.translate(object.getParent().getPosition()));
+		var m = shader.setUniform("model", Matrix4f.transform(object.getPosition(), object.getRotation(), object.getScale()));
+		var v = shader.setUniform("view", Matrix4f.view(camera.getPosition(), camera.getRotation()));
+		var p = shader.setUniform("projection", window.getProjectionMatrix());
+		var f = shader.setUniform("forward", Matrix4f.translate(object.getParent().getPosition().neg()));
+		var b = shader.setUniform("back", Matrix4f.translate(object.getParent().getPosition()));
 		GL11.glDrawElements(GL11.GL_TRIANGLES, object.getMesh().getIndices().length, GL11.GL_UNSIGNED_INT, 0);
 		shader.unbind();
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		MemoryUtil.memFree(m);
+		MemoryUtil.memFree(v);
+		MemoryUtil.memFree(p);
+		MemoryUtil.memFree(f);
+		MemoryUtil.memFree(b);
+
+		//GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GL30.glDisableVertexAttribArray(0);
 		GL30.glDisableVertexAttribArray(1);
 		GL30.glDisableVertexAttribArray(2);
