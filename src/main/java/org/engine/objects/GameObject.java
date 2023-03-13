@@ -101,7 +101,8 @@ public abstract class GameObject extends EngineObject implements Resize {
 		return mesh;
 	}
 	public void setRotation(Vector3f rotation){
-		this.rotation = Vector3f.add(this.rotation, rotation);
+		//this.rotation = Vector3f.add(this.rotation, rotation);
+		this.rotation =new Vector3f(rotation);
 	}
 	public void setPosition(Vector3f position){
 		this.position = Vector3f.add(this.position, position);

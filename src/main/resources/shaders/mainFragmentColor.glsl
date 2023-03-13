@@ -1,6 +1,6 @@
 #version 330 core
 
-in vec3 passColor;
+in vec4 passColor;
 in vec2 passTextureCoord;
 
 out vec4 outColor;
@@ -14,7 +14,7 @@ uniform sampler2D texture20;
 uniform sampler2D texture24;*/
 
 void main() {
-	outColor = vec4(passColor, 1.0f);
+	outColor = passColor;
 	/**if(passColor.x == 1.0f){
 		outColor = texture(texture4, passTextureCoord);
 	}*/

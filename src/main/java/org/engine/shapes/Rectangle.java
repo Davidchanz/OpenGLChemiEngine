@@ -25,13 +25,12 @@ public class Rectangle extends GameObject {
     public Rectangle(Vector3f P0, Vector3f P1, Vector3f P2, Vector3f P3, Vector3f position, Color color, String texturePath){
         this.setColor(color);
         Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
-        Vector3f c = new Vector3f(color.getRed(),color.getGreen(),color.getBlue());
         Mesh mesh = new Mesh(new Vertex[] {
                 //Back face
-                new Vertex(P0, new Vector2f(0.0f, 0.0f), c),
-                new Vertex(P1, new Vector2f(0.0f, 1.0f), c),
-                new Vertex(P2, new Vector2f(1.0f, 1.0f), c),
-                new Vertex(P3, new Vector2f(1.0f, 0.0f), c),
+                new Vertex(P0, new Vector2f(0.0f, 0.0f), color),
+                new Vertex(P1, new Vector2f(0.0f, 1.0f), color),
+                new Vertex(P2, new Vector2f(1.0f, 1.0f), color),
+                new Vertex(P3, new Vector2f(1.0f, 0.0f), color),
 
         }, new int[] {
                 //Back face
@@ -54,19 +53,18 @@ public class Rectangle extends GameObject {
     public Rectangle(Vector3f P0, Vector3f P1, Vector3f P2, Vector3f P3, Vector3f position, Color color){
         this.setColor(color);
         Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
-        Vector3f c = new Vector3f(color.getRed(),color.getGreen(),color.getBlue());
         Mesh mesh = new Mesh(new Vertex[] {
                 //Back face
-                new Vertex(P0, new Vector2f(0.0f, 0.0f), c),
-                new Vertex(P1, new Vector2f(0.0f, 1.0f), c),
-                new Vertex(P2, new Vector2f(1.0f, 1.0f), c),
-                new Vertex(P3, new Vector2f(1.0f, 0.0f), c),
+                new Vertex(P0, new Vector2f(0.0f, 0.0f), color),
+                new Vertex(P1, new Vector2f(0.0f, 1.0f), color),
+                new Vertex(P2, new Vector2f(1.0f, 1.0f), color),
+                new Vertex(P3, new Vector2f(1.0f, 0.0f), color),
 
         }, new int[] {
                 //Back face
                 0, 1, 2,
                 2, 3, 0,
-        }, color);
+        });
         this.ini(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), mesh);
 
         float sumX=0;
@@ -81,13 +79,12 @@ public class Rectangle extends GameObject {
     }
 
     public Rectangle(Vector3f P0, Vector3f P1, Vector3f P2, Vector3f P3, Vector3f position, Vector3f normal, Color color){
-        Vector3f c = new Vector3f(color.getRed(),color.getGreen(),color.getBlue());
         Mesh mesh = new Mesh(new Vertex[] {
                 //Back face
-                new Vertex(P0, new Vector2f(0.0f, 0.0f), c),
-                new Vertex(P1, new Vector2f(0.0f, 1.0f), c),
-                new Vertex(P2, new Vector2f(1.0f, 1.0f), c),
-                new Vertex(P3, new Vector2f(1.0f, 0.0f), c),
+                new Vertex(P0, new Vector2f(0.0f, 0.0f), color),
+                new Vertex(P1, new Vector2f(0.0f, 1.0f), color),
+                new Vertex(P2, new Vector2f(1.0f, 1.0f), color),
+                new Vertex(P3, new Vector2f(1.0f, 0.0f), color),
 
         }, new int[] {
                 //Back face
@@ -127,14 +124,13 @@ public class Rectangle extends GameObject {
         var P2 = new Vector3f(this.getWidth()/Scene.WIDTH,this.getHeight()/Scene.WIDTH, 1f);
         var P3 = new Vector3f(-this.getWidth()/Scene.WIDTH,this.getHeight()/Scene.WIDTH, 1f);
         Vector3f pos = new Vector3f(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
-        Vector3f c = new Vector3f(this.getColor().getRed(), this.getColor().getGreen(), this.getColor().getBlue());
         Mesh mesh = new Mesh(new Vertex[] {
 
                 //Back face
-                new Vertex(P0, new Vector2f(0.0f, 0.0f), c),
-                new Vertex(P1, new Vector2f(0.0f, 1.0f), c),
-                new Vertex(P2, new Vector2f(1.0f, 1.0f), c),
-                new Vertex(P3, new Vector2f(1.0f, 0.0f), c),
+                new Vertex(P0, new Vector2f(0.0f, 0.0f), this.getColor()),
+                new Vertex(P1, new Vector2f(0.0f, 1.0f), this.getColor()),
+                new Vertex(P2, new Vector2f(1.0f, 1.0f), this.getColor()),
+                new Vertex(P3, new Vector2f(1.0f, 0.0f), this.getColor()),
 
         }, new int[] {
                 //Back face

@@ -37,12 +37,9 @@ public class Mesh {
 		//create();
 	}
 
-	public Mesh(Vertex[] vertices, int[] indices, Color color) {
+	public Mesh(Vertex[] vertices, int[] indices) {
 		this.vertices = vertices;
 		this.indices = indices;
-		this.color = color;
-		for(int i = 0; i < vertices.length; i++)
-			this.vertices[i].setColor(this.color);
 		//create();
 		this.material = Material.getEmpty();
 		this.isTextured = false;
@@ -75,16 +72,17 @@ public class Mesh {
 		tbo = storeData(textureBuffer, 2, 2);
 		/////////////color
 
-		FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
-		float[] colorData = new float[vertices.length * 3];
+		FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(vertices.length * 4);
+		float[] colorData = new float[vertices.length * 4];
 		for (int i = 0; i < vertices.length; i++) {
-			colorData[i * 3] = vertices[i].getColor().getX();
-			colorData[i * 3 + 1] = vertices[i].getColor().getY();
-			colorData[i * 3 + 2] = vertices[i].getColor().getZ();
+			colorData[i * 4] = vertices[i].getColor().getRed();
+			colorData[i * 4 + 1] = vertices[i].getColor().getGreen();
+			colorData[i * 4 + 2] = vertices[i].getColor().getBlue();
+			colorData[i * 4 + 3] = vertices[i].getColor().getAlpha();
 		}
 		colorBuffer.put(colorData).flip();
 
-		cbo = storeData(colorBuffer, 1, 3);
+		cbo = storeData(colorBuffer, 1, 4);
 
 		////////////color
 

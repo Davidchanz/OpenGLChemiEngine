@@ -5,6 +5,8 @@ import org.engine.maths.Matrix4f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL33;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -53,8 +55,19 @@ public class Window {
 		
 		createCallbacks();
 
+		//GL11.glEnable(GL11.GL_DEPTH_TEST);
+
 		GL11.glEnable(GL11.GL_BLEND);
+		// Enables Cull Facing
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		// Keeps front faces
+		//GL11.glCullFace(GL11.GL_FRONT);
+		// Uses counter clock-wise standard
+		GL11.glFrontFace(GL11.GL_CCW);
+		// Configures the blending function
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		/*GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);*/
 		
 		GLFW.glfwShowWindow(window);
 		
@@ -85,8 +98,10 @@ public class Window {
 			GL11.glViewport(0, 0, width, height);
 			isResized = false;
 		}
+		//GL11.glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		GL11.glClearColor(background.getRed(), background.getGreen(), background.getBlue(), background.getAlpha());
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
 		GLFW.glfwPollEvents();
 		frames++;
 		if (System.currentTimeMillis() > time + 1000) {

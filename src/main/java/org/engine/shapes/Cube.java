@@ -32,7 +32,7 @@ public class Cube extends ShapeObject {
         }
         setCenter(new Vector3f(sumX/this.body.size(), sumY/this.body.size(), sumZ/this.body.size()));//todo compute
     }
-    public void changeColor(Vector3f color){
+    public void changeColor(Color color){
         for (var i: body){
             Arrays.stream(i.getMesh().getVertices()).forEach((x)->{x.setColor(color);});
             i.getMesh().create();

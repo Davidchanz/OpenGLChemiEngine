@@ -89,9 +89,10 @@ public class ShapeObject extends EngineObject {
             add(i);//invoke add single add() for all new shapes in collections
         }
     }
-    public void rotateX(Vector3f rotation){
-        this.setRotation(Vector3f.add(this.getRotation(), rotation));
+    public void rotate(Vector3f rotation, Vector3f center){
+        this.setRotation(rotation);
         for(var i: this.body){
+            i.setCenter(center);
             i.setRotation(rotation);
         }
     }

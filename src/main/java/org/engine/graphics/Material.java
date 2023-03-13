@@ -12,16 +12,16 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 public class Material {
-    private String path;
-	private Texture texture;
-	private float width, height;
-	private int textureID;
+    protected String path;
+	protected Texture texture;
+	protected float width, height;
+	protected int textureID;
 	
 	public Material(String path) {
 		this.path = path;
 	}
-	public static Material getEmpty(){
-		return new Material("src/main/resources/textures/empty.png");
+	public static EmptyMaterial getEmpty(){
+		return new EmptyMaterial("/textures/empty.png");
 	}
 	
 	public void create() {
@@ -50,7 +50,7 @@ public class Material {
 		}*/
 
 		try (FileInputStream f = new FileInputStream(path)){
-			this.texture = TextureLoader.getTexture(path.split("[.]")[1], Objects.requireNonNull(f/*Material.class.getResourceAsStream(path)*/), GL11.GL_NEAREST);
+			this.texture = TextureLoader.getTexture(path.split("[.]")[1], Objects.requireNonNull(f), GL11.GL_NEAREST);
 			this.width = texture.getWidth();
 			this.height = texture.getHeight();
 			this.textureID = texture.getTextureID();
