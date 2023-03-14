@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL30;
 
 import org.engine.io.Window;
 import org.engine.maths.Matrix4f;
-import org.engine.objects.Camera;
+import org.engine.cameras.Camera;
 import org.engine.objects.GameObject;
 import org.lwjgl.system.MemoryUtil;
 

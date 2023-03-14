@@ -1,9 +1,8 @@
 package org.engine;
 
+import org.engine.cameras.PerspectiveCamera;
 import org.engine.events.GLKeyEvent;
 import org.engine.events.GLMouseEvent;
-import org.engine.graphics.EmptyMaterial;
-import org.engine.graphics.Material;
 import org.engine.graphics.Renderer;
 import org.engine.graphics.Shader;
 import org.engine.io.Input;
@@ -12,11 +11,10 @@ import org.engine.listeners.CloseListener;
 import org.engine.listeners.KeyPressedListener;
 import org.engine.listeners.MouseButtonPressedListener;
 import org.engine.maths.Vector3f;
-import org.engine.objects.Camera;
+import org.engine.cameras.Camera;
 import org.engine.utils.Color;
 import org.engine.objects.ShapeObject;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +33,7 @@ public class Scene implements Runnable{
     private final List<MouseButtonPressedListener> mouseButtonPressedListeners;
     private final List<CloseListener> closeListeners;
     private final List<KeyPressedListener> keyPressedListeners;
-    private Camera camera = new Camera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
+    private Camera camera = new PerspectiveCamera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
     private final Color backgroundColor;
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public static boolean is3DCameraEnable;
@@ -70,7 +68,6 @@ public class Scene implements Runnable{
         this.window.setBackgroundColor(this.backgroundColor);
         this.window.create();
         this.shader.create();
-        this.camera.setWindow(this.window.getWindow());
     }
 
     public void add(ShapeObject object){
@@ -162,7 +159,13 @@ public class Scene implements Runnable{
 
     private synchronized void update() {
         window.update();
-        if(Input.isIsWindowFocused() && is3DCameraEnable)camera.update(/*this.gameObjects.get(0).body.get(0)*/);//TODO
+        if(is3DCameraEnable){
+            if(Input.isIsWindowFocused())
+                camera.update();
+        }
+        else
+            camera.update();
+        //if(Input.isIsWindowFocused() && is3DCameraEnable)camera.update();//TODO
     }
 
     private synchronized void render() {
@@ -222,7 +225,7 @@ public class Scene implements Runnable{
 
     public synchronized void setCamera(Camera camera){
         this.camera = camera;
-        is3DCameraEnable = true;
+        is3DCameraEnable = this.camera.isIs3DEnabled();
     }
 
     public boolean isReady() {
