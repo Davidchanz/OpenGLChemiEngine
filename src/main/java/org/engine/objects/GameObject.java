@@ -1,6 +1,5 @@
 package org.engine.objects;
 
-import org.engine.Resize;
 import org.engine.graphics.Mesh;
 import org.engine.maths.Vector3f;
 import org.engine.utils.Color;
@@ -8,10 +7,10 @@ import org.engine.utils.Color;
 public abstract class GameObject extends EngineObject implements Resize {
 	private float width;
 	private float height;
-	private Vector3f position;
-	private Vector3f rotation;
+	//private Vector3f position;
+	//private Vector3f rotation;
 	private Vector3f scale;
-	private Vector3f center;
+	//private Vector3f center;
 	private Vector3f normal;
 	private Mesh mesh;
 	private ShapeObject parent;

@@ -1,12 +1,15 @@
 package org.engine.objects;
 
+import org.engine.Scene;
 import org.engine.maths.Vector3f;
+import org.engine.utils.Transformation;
 
-public abstract class EngineObject {
-    public int id;//id
-    private Vector3f rotation;//rotation
-    private Vector3f center;//center
-    private Vector3f position;//position
+public abstract class EngineObject implements Transform{
+    protected int id;//id
+    protected Vector3f rotation;//rotation
+    protected Vector3f center;//center
+    protected Vector3f position;//position
+    private Scene scene;
 
     public Vector3f getPosition() {
         return position;
@@ -30,5 +33,21 @@ public abstract class EngineObject {
 
     public void setRotation(Vector3f rotation) {
         this.rotation = rotation;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

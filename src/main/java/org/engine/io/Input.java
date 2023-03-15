@@ -6,7 +6,7 @@ import org.lwjgl.glfw.*;
 public class Input {
 	private static boolean[] keys = new boolean[GLFW.GLFW_KEY_LAST];
 	private static boolean[] buttons = new boolean[GLFW.GLFW_MOUSE_BUTTON_LAST];
-	private static double mouseX, mouseY;
+	private static double mouseX, mouseY, lastMouseX, lastMouseY;
 	private static double scrollX, scrollY;
 	
 	private GLFWKeyCallback keyboard;
@@ -19,6 +19,7 @@ public class Input {
 	private static int pressedKey;
 	private static int lastPressedKey;
 	private static boolean isWindowFocused;
+	private static int draggedButton;
 	
 	public Input() {
 		pressedButton = -1;
@@ -43,6 +44,10 @@ public class Input {
 			public void invoke(long window, int button, int action, int mods) {
 				buttons[button] = (action != GLFW.GLFW_RELEASE);
 				pressedButton = button;
+				if(action != GLFW.GLFW_RELEASE)
+					draggedButton = button;
+				else
+					draggedButton = -1;
 			}
 		};
 		
@@ -88,10 +93,12 @@ public class Input {
 	}
 
 	public static double getMouseX() {
+		lastMouseX = mouseX;
 		return mouseX;
 	}
 
 	public static double getMouseY() {
+		lastMouseY = mouseY;
 		return mouseY;
 	}
 	
@@ -141,5 +148,17 @@ public class Input {
 
 	public GLFWWindowFocusCallback getWindowFocus() {
 		return windowFocus;
+	}
+
+	public static int getDraggedButton() {
+		return draggedButton;
+	}
+
+	public static double getLastMouseX() {
+		return lastMouseX;
+	}
+
+	public static double getLastMouseY() {
+		return lastMouseY;
 	}
 }

@@ -8,6 +8,7 @@ import org.engine.maths.Vector2f;
 import org.engine.maths.Vector3f;
 import org.engine.objects.GameObject;
 import org.engine.utils.Color;
+import org.engine.utils.Transformation;
 
 public class Rectangle extends GameObject {
     public Rectangle(float size, Vector3f position, Color color){
@@ -137,6 +138,10 @@ public class Rectangle extends GameObject {
                 2, 3, 0,
         }, this.getMesh().getMaterial());
         this.ini(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), mesh);
-        this.setChanged(true);
+    }
+
+    @Override
+    public Transformation transform() {
+        return null;
     }
 }

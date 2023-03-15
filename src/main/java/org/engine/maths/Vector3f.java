@@ -13,8 +13,14 @@ public class Vector3f {
 		this.y = v.y;
 		this.z = v.z;
 	}
-	
-	public void set(float x, float y, float z) {
+
+    public Vector3f() {
+		this.x = 0.0f;
+		this.y = 0.0f;
+		this.z = 0.0f;
+    }
+
+    public void set(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;

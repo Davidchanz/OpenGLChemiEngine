@@ -22,6 +22,10 @@ public class PerspectiveCamera extends Camera {
         this.is3DEnabled = false;
     }
 
+    public PerspectiveCamera(){
+        this(cameraCenter, new Vector3f(0,0,0));
+    }
+
     @Override
     public void update() {
         float x = this.moveSpeed;

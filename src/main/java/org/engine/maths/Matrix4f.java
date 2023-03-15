@@ -182,4 +182,17 @@ public class Matrix4f {
 	public float[] getAll() {
 		return elements;
 	}
+
+	@Override
+	public String toString() {
+		String res = "";
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				res += this.get(i, j);
+				if(j != SIZE-1)res += ", ";
+			}
+			res += "\n";
+		}
+		return res;
+	}
 }

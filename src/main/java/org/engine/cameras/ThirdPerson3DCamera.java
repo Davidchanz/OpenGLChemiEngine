@@ -20,6 +20,10 @@ public class ThirdPerson3DCamera extends Camera {
         this.targetObject = targetObject;
     }
 
+    public ThirdPerson3DCamera(){
+        this(cameraCenter, new Vector3f(0,0,0));
+    }
+
     @Override
     public void update() {
         if(this.targetObject == null)

@@ -12,9 +12,54 @@ import org.engine.utils.Color;
 import org.engine.shapes.Rectangle;
 import org.engine.objects.ShapeObject;
 
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.TreeMap;
+
 public class Test {
     public static void main(String[] args) {
-        Scene scene = new Scene(800, 800, Color.WHITE);
+
+        Scene scene = new Scene(800, 800, 800, 800, Color.TRANSPARENT);
+        for(int i = 0; i < 10; i++){
+            ShapeObject o = new ShapeObject();
+            o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
+            scene.add(o);
+        }
+        scene.start();
+
+
+        /*TreeMap<Integer, ShapeObject[][]> objectFields = new TreeMap<>();
+
+        for (int i = 0; i < 5; i++){
+            objectFields.put(i, new ShapeObject[800][800]);
+            var buffer = objectFields.get(i);
+            for (var j : buffer) {
+                Arrays.fill(j, new ShapeObject()); //TODO
+            }
+        }
+
+        new Timer(1, actionEvent -> {
+            var id = new Random().nextInt(5);
+            var x = new Random().nextInt(800);
+            var y = new Random().nextInt(800);
+            var buffer = objectFields.get(id);
+            if (buffer != null) {
+                *//*if(buffer[x][y] != null)
+                    buffer[x][y].remove();*//*//TODO
+                buffer[x][y] = new ShapeObject();
+            }
+        }).start();
+        while (true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }*/
+
+
+       /* Scene scene = new Scene(2000, 2000, 800, 800, Color.WHITE);
         ShapeObject rect = new ShapeObject();;
         for (int i = 0; i < 1; i++) {
             var r = new Rectangle(10, new Vector3f(i * 10, 0, 0), Color.RED);
@@ -22,28 +67,28 @@ public class Test {
             //rect.add(new Rectangle(50, new Vector3f(50,0,0), Color.WHITE, "src/main/resources/textures/ant.png"));
             scene.add(rect);
         }
-        /*ShapeObject r = new ShapeObject();
+        *//*ShapeObject r = new ShapeObject();
         r.add(new Rectangle(10, new Vector3f(100, 0, 0), Color.WHITE, "src/main/resources/textures/ant.png"));
-        scene.add(r);*/
+        scene.add(r);*//*
         for (int i = 0; i < 10; i++) {
             ShapeObject e = new ShapeObject();
             var r = new Rectangle(10, new Vector3f(i * 10, 0, 0), Color.BLACK);
             e.add(r);
             //rect.add(new Rectangle(50, new Vector3f(50,0,0), Color.WHITE, "src/main/resources/textures/ant.png"));
             scene.add(e);
-        }
+        }*/
         //r.setWidth(100);
         //r.resize();
 
-        ThirdPerson3DCamera camera = new ThirdPerson3DCamera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
-        scene.setCamera(camera);
-        camera.setTargetObject(rect);
+        //ThirdPerson3DCamera camera = new ThirdPerson3DCamera(new Vector3f(0, 0, 1.712f), new Vector3f(0, 0, 0));
+        //scene.setCamera(camera);
+        //camera.setTargetObject(rect);
 
 
         /*Cube c = new Cube("", 1, new Vector3f(0,0,0));
         scene.add(c);*/
         //ArrayList<ShapeObject> objects = new ArrayList<>();
-        Vector2 dir = new Vector2();
+        //Vector2 dir = new Vector2();
         //dir.set(0,1);
         /*switch (*//*new Random().nextInt(4)*//*0){
             case 0 ->{//r
@@ -97,15 +142,20 @@ public class Test {
         //t1.start();
         //t2.start();
 
-        scene.addMouseEventListener(glMouseEvent -> {
-            System.out.println(glMouseEvent.getButton());
-            if (glMouseEvent.isButtonDown(0))
-                System.out.println("qqqqqq");
+        /*scene.addMouseButtonPressedListener(glMouseEvent -> {
+            //System.out.println(glMouseEvent.getButton());
+            System.out.println(glMouseEvent.getX());
+            //if (glMouseEvent.isButtonDown(0))
+                //System.out.println("qqqqqq");
         });
 
-        scene.addMouseEventListener(glMouseEvent -> {
+        scene.addMouseButtonPressedListener(glMouseEvent -> {
             if (glMouseEvent.isButtonDown(1))
                 System.out.println("wwwwwwwww");
+        });
+
+        scene.addMouseDraggedListener(glMouseEvent -> {
+            System.out.println(glMouseEvent.getX());
         });
 
         scene.addKeyPressedListener(glKeyEvent -> {
@@ -127,7 +177,7 @@ public class Test {
                 System.out.println("B");
         });
 
-        scene.start();
+        scene.start();*/
         /*while (true){
             System.out.println("asdf");
             rect.body.get(0).setWidth(100);

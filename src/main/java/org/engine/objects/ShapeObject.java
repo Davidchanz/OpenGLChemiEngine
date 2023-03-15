@@ -1,7 +1,9 @@
 package org.engine.objects;
 
+import org.UnityMath.Vector2;
 import org.engine.Scene;
 import org.engine.maths.Vector3f;
+import org.engine.utils.Transformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +15,12 @@ public class ShapeObject extends EngineObject {
     public ArrayList<GameObject> body;//set of Abstract shape
     public String name;//name
     public Vector3f normal;
+    private Vector2 spriteSize;
 
     public final ArrayList<GameObject> newObjects = new ArrayList<>();
+    private boolean isVisible;
+    private boolean isBuffered;
+    private boolean isRemove;
     /**ShapeObject constructor
      * ini all members default*/
     public ShapeObject(){
@@ -24,6 +30,9 @@ public class ShapeObject extends EngineObject {
         this.setRotation(new Vector3f(0,0,0));
         this.setCenter(new Vector3f(0,0,0));
         this.setPosition(new Vector3f(0,0,0));
+        this.isVisible = true;
+        this.isBuffered = true;
+        this.isRemove = false;
     }
     /**ShapeObject constructor
      * ini name and id*/
@@ -52,6 +61,7 @@ public class ShapeObject extends EngineObject {
             synchronized (this.newObjects) {*/
         //o.id = this.id;//ini new shape id
                 this.body.add(o);//add new shape in body
+        this.spriteSize = new Vector2(o.getWidth(), o.getHeight());//TODO
                 o.setRotation(this.getRotation());//Vector3f.add(o.getRotation(), this.getRotation());
                 float sumX=0;
                 float sumY=0;
@@ -98,12 +108,69 @@ public class ShapeObject extends EngineObject {
     }
 
     public void build() {
-        for(int i = 0; i < this.body.size(); i++)
-            this.body.get(i).build();
+        for (GameObject gameObject : this.body) gameObject.build();
     }
 
     public void destroy(){
-        for(int i = 0; i < this.body.size(); i++)
-            this.body.get(i).destroy();
+        for (GameObject gameObject : this.body) gameObject.destroy();
+    }
+
+    @Override
+    public void setScene(Scene scene) {
+        super.setScene(scene);
+        this.body.forEach(gameObject -> gameObject.setScene(scene));
+    }
+
+    public Vector2 getSpriteSize() {
+        return spriteSize;
+    }
+
+    public void setSpriteSize(Vector2 spriteSize) {
+        this.spriteSize = new Vector2(spriteSize);
+    }
+
+    @Override
+    public Transformation transform() {
+       /* var position = this.getPosition();
+        var model = Matrix4f.transform(object.getPosition(), object.getRotation(), object.getScale()));
+        var view = Matrix4f.view(camera.getPosition(), camera.getRotation()));
+        var projection = window.getProjectionMatrix());*/
+        return null;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+        if(this.getScene() != null)
+            if(this.isVisible){
+                this.getScene().setObjectVisible(this);
+            }else {
+                this.getScene().setObjectInvisible(this);
+            }
+    }
+
+    public void remove(){
+        this.isRemove = true;
+        if(this.getScene() != null)
+            this.getScene().remove(this);
+    }
+
+    public boolean isBuffered() {
+        return isBuffered;
+    }
+
+    public void setBuffered(boolean buffered) {
+        isBuffered = buffered;
+    }
+
+    public boolean isRemove() {
+        return isRemove;
+    }
+
+    public void setRemove(boolean remove) {
+        isRemove = remove;
     }
 }

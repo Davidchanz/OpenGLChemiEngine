@@ -14,6 +14,14 @@ public class FirstPerson3DCamera extends Camera {
 
     public FirstPerson3DCamera(Vector3f position, Vector3f rotation) {
         super(position, rotation);
+        this.ini();
+    }
+
+    public FirstPerson3DCamera(){
+        this(cameraCenter, new Vector3f(0,0,0));
+    }
+
+    private void ini(){
         this.left = GLFW.GLFW_KEY_A;
         this.right = GLFW.GLFW_KEY_D;
         this.forward = GLFW.GLFW_KEY_W;
