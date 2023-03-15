@@ -151,7 +151,7 @@ public class Cube extends ShapeObject {
         this.setPosition(position);//move position on dir
         //this.center = Vector3f.add(this.center, dir);//move center on dir TODO
         for(var i: this.body){
-            i.setPositionStraght(position);//move all AbstractShapes
+            i.setPosition(position);//move all AbstractShapes
         }
     }
 }

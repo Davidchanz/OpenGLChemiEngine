@@ -17,10 +17,12 @@ import org.engine.maths.Vector3f;
 import org.engine.cameras.Camera;
 import org.engine.objects.EngineObject;
 import org.engine.objects.GameObject;
+import org.engine.utils.BorderType;
 import org.engine.utils.Color;
 import org.engine.objects.ShapeObject;
 import org.engine.utils.Transformation;
 import org.lwjgl.glfw.GLFW;
+import org.lwjglx.test.spaceinvaders.Game;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +34,7 @@ public class Scene implements Runnable{
     private Renderer renderer;
     private Shader shader;
     private final List<ShapeObject> gameObjects;
-    //private final List<ShapeObject> invisibleGameObjects;
+    private final List<ShapeObject> invisibleGameObjects;
     private final List<ShapeObject> addObjects;
     private final List<ShapeObject> removeObjects;
     private final List<ShapeObject> removeBuffer;
@@ -49,7 +51,7 @@ public class Scene implements Runnable{
     public static boolean is3DCameraEnable;
     public static AtomicBoolean isReady = new AtomicBoolean(false);
     private int windowW, windowH;
-    private TreeMap<Integer, ShapeObject[][]> objectFields;
+    private TreeMap<Integer, GameObject[][]> objectFields;
     private List<ShapeObject> objectBuffer;
     private AtomicBoolean isObjectVisibleChanged = new AtomicBoolean(false);
 
@@ -75,7 +77,7 @@ public class Scene implements Runnable{
         this.objectFields = new TreeMap<>();
         this.objectBuffer = Collections.synchronizedList(new ArrayList<>());
 
-        //this.invisibleGameObjects = new ArrayList<>();
+        this.invisibleGameObjects = new ArrayList<>();
         this.visibleObjectsBuffer = Collections.synchronizedList(new ArrayList<>());
         this.invisibleObjectsBuffer = Collections.synchronizedList(new ArrayList<>());
     }
@@ -140,8 +142,19 @@ public class Scene implements Runnable{
         this.ifRemove();
         this.update();
         this.updateVisibility();
+        this.updateInvisibleObjects();
         this.render();
         this.eventListeners();
+    }
+
+    private void updateInvisibleObjects() {
+        this.busy.set(true);
+
+        new Thread(()->{
+            this.invisibleGameObjects.parallelStream().forEach(this::ifUpdateShapeObject);
+        }).start();
+
+        this.busy.set(false);
     }
 
     private void updateVisibility() {
@@ -200,13 +213,13 @@ public class Scene implements Runnable{
         this.removeObjects.addAll(this.removeBuffer);
         this.removeBuffer.clear();
 
-        //if(object.isVisible())
-        /*else
-                this.invisibleGameObjects.remove(object);*/
-        this.removeObjects.forEach(this.gameObjects::remove);
-
-        //this.gameObjects.removeAll(this.removeObjects);
-        this.removeObjects.forEach(this::removeObjectFromBuffer);
+        this.removeObjects.forEach(object -> {
+            if(object.isVisible())
+                this.gameObjects.remove(object);
+            else
+                this.invisibleGameObjects.remove(object);
+        });
+        this.removeObjects.forEach(this::removeShapeFromBuffer);
         this.removeObjects.forEach(ShapeObject::destroy);
         this.removeObjects.clear();
         this.busy.set(false);
@@ -216,14 +229,15 @@ public class Scene implements Runnable{
         if(this.busy.get())
             return;
         this.busy.set(true);
+        this.addObjects.addAll(this.addBuffer);
+        this.addBuffer.clear();
         this.addObjects.forEach(object -> {
             if(object.isVisible())
                 this.gameObjects.add(object);
-            /*else
-                this.invisibleGameObjects.add(object);*///TODO
+            else
+                this.invisibleGameObjects.add(object);
         });
-        //this.gameObjects.addAll(this.addObjects);
-        this.addObjects.forEach(this::addObjectInBufferNow);
+        this.addObjects.forEach(this::addShapeObjectInBufferNow);
         this.addObjects.clear();
         this.busy.set(false);
     }
@@ -242,19 +256,28 @@ public class Scene implements Runnable{
     private synchronized void render() {
         this.busy.set(true);
             this.gameObjects.forEach(shapeObject -> {
-                if(shapeObject.isRemove()){
-                    this.remove(shapeObject);
-                    return;
-                }
-                //if(shapeObject.isVisible())
-                    shapeObject.body.forEach(object -> {
-                        if(object.isChanged())
-                            object.build();
-                        renderer.renderMesh(object, camera);
-                    });
+                this.ifUpdateShapeObject(shapeObject);
+                shapeObject.body.forEach(object -> {
+                    if(object.isChanged())
+                        object.build();
+                    renderer.renderMesh(object, camera);
+                });
             });
         this.busy.set(false);
         window.swapBuffers();
+    }
+
+    private void ifUpdateShapeObject(ShapeObject shapeObject){
+        if(shapeObject.isRemove()){
+            this.remove(shapeObject);
+            return;
+        }
+        if(shapeObject.isAddObject()) {
+            shapeObject.addAllIf();
+        }
+        if(shapeObject.isRemoveObject()) {
+            shapeObject.removeAllIf();
+        }
     }
 
     public void updateObjectBuffer(int... ids){
@@ -263,15 +286,26 @@ public class Scene implements Runnable{
         this.busy.set(true);
         for(int i = 0; i < ids.length; i++) {
             this.clearObjectsBuffer(i);
-            this.addObjectInBufferPermanent(i, Arrays.stream(this.gameObjects.toArray(new ShapeObject[0])).toList());
+            this.addShapeObjectInBufferPermanent(i, Arrays.stream(this.gameObjects.toArray(new ShapeObject[0])).toList());
         }
         this.busy.set(false);
     }
 
-    private void removeObjectFromBuffer(ShapeObject object){
-        if(this.isOutSceneBorder(object.getPosition()))
+    public void removeGameObjectFromBuffer(GameObject object){
+        if(this.isOutSceneBorder(object.getCenter()) != BorderType.NO_BORDER)
             return;
-        var sceneCoord = new Vector3f(object.getPosition());
+        var sceneCoord = new Vector3f(object.getCenter());
+        sceneCoord = Scene.toGLDimension(sceneCoord);
+        sceneCoord = Scene.toScreenDimension(sceneCoord);
+        if(this.objectFields.get(object.getParent().getId()) != null) {
+            this.objectFields.get(object.getId())[(int) sceneCoord.getX()][(int) sceneCoord.getY()] = null;
+        }
+    }
+
+    private void removeShapeFromBuffer(ShapeObject object){
+        if(this.isOutSceneBorder(object.getCenter()) != BorderType.NO_BORDER)
+            return;
+        var sceneCoord = new Vector3f(object.getCenter());
         sceneCoord = Scene.toGLDimension(sceneCoord);
         sceneCoord = Scene.toScreenDimension(sceneCoord);
         if(this.objectFields.get(object.getId()) != null) {
@@ -296,12 +330,24 @@ public class Scene implements Runnable{
         shader.destroy();
     }
 
-    public boolean isOutSceneBorder(Vector3f position){
+    /**
+     * return 0 if no In Scne border
+     * return 1 if outOfBorder right
+     * return 2 if outOfBorder up
+     * return 3 if outOfBorder left
+     * return 4 if outOfBorder down
+     * */
+    public BorderType isOutSceneBorder(Vector3f position){
         var screenPos = toGLDimension(position);
-        if(screenPos.getX() <= -WIDTH/2f || screenPos.getX() >= WIDTH/2f || screenPos.getY() <= -HEIGHT/2f || screenPos.getY() >= HEIGHT/2f)
-            return true;
-        else
-            return false;
+        if(screenPos.getX() <= -WIDTH/2f)//left
+            return BorderType.BORDER_LEFT;
+        else if(screenPos.getX() >= WIDTH/2f)//right
+            return BorderType.BORDER_RIGHT;
+        else if(screenPos.getY() <= -HEIGHT/2f)//down
+            return BorderType.BORDER_DOWN;
+        else if(screenPos.getY() >= HEIGHT/2f)//up
+            return BorderType.BORDER_UP;
+        return BorderType.NO_BORDER;
     }
 
     public static Vector3f toGLDimension(Vector3f vec){
@@ -348,37 +394,72 @@ public class Scene implements Runnable{
         this.camera.resetCamera();
     }
 
-    private void addObjectInBufferPermanent(int id, Collection<ShapeObject> objects){
-        //this.objectBuffer.forEach(this::addObjectInBufferNow);
-        //this.objectBuffer.clear();
+    private void addShapeObjectInBufferPermanent(int id, Collection<ShapeObject> objects){
         objects.forEach(object -> {
             if(object != null && object.getId() == id)
-                this.addObjectInBufferNow(object);
+                this.addShapeObjectInBufferNow(object);
         });
     }
 
-    private void addObjectInBufferNow(ShapeObject object){
-        if(!object.isBuffered())
+    public void addGameObjectInBufferPermanent(Collection<GameObject> objects){
+        objects.forEach(object -> {
+            if(object != null)
+                this.addGameObjectInBufferNow(object);
+        });
+    }
+
+    private void addGameObjectInBufferNow(GameObject gameObject){
+        if(/*gameObject.getParent() != null && */!gameObject.getParent().isBuffered())
             return;
-        var sceneCoord = new Vector3f(object.getCenter());
+        var sceneCoord = new Vector3f(gameObject.getCenter());
         sceneCoord = Scene.toGLDimension(sceneCoord);
         sceneCoord = Scene.toScreenDimension(sceneCoord);
-        for (int x = (int) sceneCoord.getX() - (int)object.getSpriteSize().x; x <= (int) sceneCoord.getX() + (int)object.getSpriteSize().x; x++) {
-            for (int y = (int) sceneCoord.getY() - (int)object.getSpriteSize().y; y <= (int) sceneCoord.getY() + (int)object.getSpriteSize().y; y++) {
+        var parent = gameObject.getParent();
+        for (int x = (int) sceneCoord.getX() - (int) parent.getSpriteSize().x; x <= (int) sceneCoord.getX() + (int) parent.getSpriteSize().x; x++) {
+            for (int y = (int) sceneCoord.getY() - (int) parent.getSpriteSize().y; y <= (int) sceneCoord.getY() + (int) parent.getSpriteSize().y; y++) {
                 if (x < 0 || x > Scene.WIDTH || y < 0 || y > Scene.HEIGHT)
                     continue;
-                var buffer = this.objectFields.get(object.getId());
+                var buffer = this.objectFields.get(parent.getId());
                 if (buffer != null) {
-                   /* if(buffer[x][y] != null)
-                        buffer[x][y].remove();*///TODO
-                    buffer[x][y] = object;
+               /* if(buffer[x][y] != null)
+                    buffer[x][y].remove();*///TODO
+                    buffer[x][y] = gameObject;
                 } else {
-                    this.objectFields.put(object.getId(), new ShapeObject[Scene.WIDTH + 1][Scene.HEIGHT + 1]);
-                    buffer = this.objectFields.get(object.getId());
+                    this.objectFields.put(parent.getId(), new GameObject[Scene.WIDTH + 1][Scene.HEIGHT + 1]);
+                    buffer = this.objectFields.get(parent.getId());
                     for (var i : buffer) {
                         Arrays.fill(i, null); //TODO
                     }
-                    buffer[x][y] = object;
+                    buffer[x][y] = gameObject;
+                }
+            }
+        }
+    }
+
+    private void addShapeObjectInBufferNow(ShapeObject object){
+        if(!object.isBuffered())
+            return;
+        for(var gameObject: object.body) {
+            var sceneCoord = new Vector3f(gameObject.getCenter());
+            sceneCoord = Scene.toGLDimension(sceneCoord);
+            sceneCoord = Scene.toScreenDimension(sceneCoord);
+            for (int x = (int) sceneCoord.getX() - (int) object.getSpriteSize().x; x <= (int) sceneCoord.getX() + (int) object.getSpriteSize().x; x++) {
+                for (int y = (int) sceneCoord.getY() - (int) object.getSpriteSize().y; y <= (int) sceneCoord.getY() + (int) object.getSpriteSize().y; y++) {
+                    if (x < 0 || x > Scene.WIDTH || y < 0 || y > Scene.HEIGHT)
+                        continue;
+                    var buffer = this.objectFields.get(object.getId());
+                    if (buffer != null) {
+                   /* if(buffer[x][y] != null)
+                        buffer[x][y].remove();*///TODO
+                        buffer[x][y] = gameObject;
+                    } else {
+                        this.objectFields.put(object.getId(), new GameObject[Scene.WIDTH + 1][Scene.HEIGHT + 1]);
+                        buffer = this.objectFields.get(object.getId());
+                        for (var i : buffer) {
+                            Arrays.fill(i, null); //TODO
+                        }
+                        buffer[x][y] = gameObject;
+                    }
                 }
             }
         }
@@ -387,21 +468,23 @@ public class Scene implements Runnable{
     public void addObjectInBuffer(ShapeObject object){
         if(!this.busy.get()) {
             this.busy.set(true);
-            this.objectBuffer.forEach(this::addObjectInBufferNow);
+            this.objectBuffer.forEach(this::addShapeObjectInBufferNow);
             this.objectBuffer.clear();
-            this.addObjectInBufferNow(object);
+            this.addShapeObjectInBufferNow(object);
             this.busy.set(false);
         }else {
             this.objectBuffer.add(object);
         }
     }
 
-    public ShapeObject getObject(int id, Vector3f pos){
+    public GameObject getObject(int id, Vector3f pos){
         var buffer = this.objectFields.get(id);
         if(buffer != null){
             Vector3f scenePos = new Vector3f(pos);
             scenePos = Scene.toGLDimension(scenePos);
             scenePos = Scene.toScreenDimension(scenePos);
+            if (scenePos.getX() < 0 || scenePos.getX() > Scene.WIDTH || scenePos.getY() < 0 || scenePos.getY() > Scene.HEIGHT)
+                return null;
             if(buffer[(int)scenePos.getX()][(int)scenePos.getY()] != null)
                 return buffer[(int)scenePos.getX()][(int)scenePos.getY()];
             return null;
@@ -415,6 +498,8 @@ public class Scene implements Runnable{
             Vector3f scenePos = new Vector3f(pos);
             scenePos = Scene.toGLDimension(scenePos);
             scenePos = Scene.toScreenDimension(scenePos);
+            if (scenePos.getX() < 0 || scenePos.getX() > Scene.WIDTH || scenePos.getY() < 0 || scenePos.getY() > Scene.HEIGHT)
+                return null;
             if(buffer[(int)scenePos.getX()][(int)scenePos.getY()] != null)
                 return (T)buffer[(int)scenePos.getX()][(int)scenePos.getY()];
             return null;

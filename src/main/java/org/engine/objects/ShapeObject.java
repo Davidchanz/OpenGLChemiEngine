@@ -7,6 +7,8 @@ import org.engine.utils.Transformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 //todo
 
@@ -21,10 +23,14 @@ public class ShapeObject extends EngineObject {
     private boolean isVisible;
     private boolean isBuffered;
     private boolean isRemove;
+    private boolean isAddObject;
+    private boolean isRemoveObject;
+    private final List<GameObject> addBuffer = Collections.synchronizedList(new ArrayList<>());
+    private final List<GameObject> removeBuffer = Collections.synchronizedList(new ArrayList<>());
     /**ShapeObject constructor
      * ini all members default*/
     public ShapeObject(){
-        this.id = 0;//ini id
+        this.setId(0);//ini id
         this.name = "Template";//ini name
         this.body = new ArrayList<>();//ini body
         this.setRotation(new Vector3f(0,0,0));
@@ -33,12 +39,15 @@ public class ShapeObject extends EngineObject {
         this.isVisible = true;
         this.isBuffered = true;
         this.isRemove = false;
+        this.isAddObject = false;
+        this.isRemoveObject = false;
+        this.setSpriteSize(new Vector2(0,0));
     }
     /**ShapeObject constructor
      * ini name and id*/
     public ShapeObject(String name, int id){
         this();//invoke default constructor
-        this.id = id;//ini id
+        this.setId(id);//ini id
         this.name = name;//ini name
     }
     /**ShapeObject constructor
@@ -56,48 +65,66 @@ public class ShapeObject extends EngineObject {
             i.setPosition(Vector3f.add(i.getPosition(), dir));//move all AbstractShapes
         }
     }
-    public void add(GameObject o){
-       /* new Thread(()->{
-            synchronized (this.newObjects) {*/
-        //o.id = this.id;//ini new shape id
-                this.body.add(o);//add new shape in body
-        this.spriteSize = new Vector2(o.getWidth(), o.getHeight());//TODO
-                o.setRotation(this.getRotation());//Vector3f.add(o.getRotation(), this.getRotation());
-                float sumX=0;
-                float sumY=0;
-                float sumZ=0;
-                for(var i: this.body.toArray(new GameObject[0])){
-                    sumX+= i.getCenter().getX() + i.getPosition().getX();//compute sum centers X
-                    sumY+= i.getCenter().getY() + i.getPosition().getY();;//compute sum centers Y
-                    sumZ+= i.getCenter().getZ() + i.getPosition().getZ();;//compute sum centers Z
-                }
-                sumX+= o.getCenter().getX() + o.getPosition().getX();
-                sumY+= o.getCenter().getY() + o.getPosition().getY();
-                sumZ+= o.getCenter().getZ() + o.getPosition().getZ();
-                this.setCenter(new Vector3f(sumX/(this.body.size()+1), sumY/(this.body.size()+1), sumZ/(this.body.size()+1)));//ini center
-                this.setPosition(Vector3f.add(this.getPosition(), o.getPosition()));//ini position
-                //for(var i: this.body){
-                o.setParent(this);//ini shape parent
-                //this.newObjects.add(o);
-                //}
-           /* }
-        }).start();*/
-    }
-    /**Add new element on object*/
-    /*public GameObject addNew(GameObject o){
-        o.build();
-        //o.id = this.id;//ini new shape id
-        this.body.add(o);//add new shape in body
-        for(var i: this.body){
-            i.setParent(this);//ini shape parent
+
+    public void remove(GameObject o){
+        if(this.getScene() == null){
+            this.removeIf(o);
+        }else {
+            this.isRemoveObject = true;
+            this.removeBuffer.add(o);
         }
-        return o;
-    }*/
+    }
+
+    public void removeAll(Collection<GameObject> objects){
+        objects.forEach(this::remove);
+    }
+
+    public void removeIf(GameObject o){
+        o.destroy();
+        this.body.remove(o);//add new shape in body
+        float sumX=0;
+        float sumY=0;
+        float sumZ=0;
+        for(var i: this.body.toArray(new GameObject[0])){
+            sumX+= i.getCenter().getX() + i.getPosition().getX();//compute sum centers X
+            sumY+= i.getCenter().getY() + i.getPosition().getY();;//compute sum centers Y
+            sumZ+= i.getCenter().getZ() + i.getPosition().getZ();;//compute sum centers Z
+        }
+        this.setCenter(new Vector3f(sumX/(this.body.size()), sumY/(this.body.size()), sumZ/(this.body.size())));//ini center
+        this.setPosition(Vector3f.subtract(this.getPosition(), o.getPosition()));//ini position//TODO
+    }
+
+    public void add(GameObject o){
+        if(this.getScene() == null){
+            this.addIf(o);
+        }else {
+            this.isAddObject = true;
+            o.setParent(this);
+            this.addBuffer.add(o);
+        }
+    }
+
+    public void addIf(GameObject o){
+        o.setId(this.getId());//ini new shape id
+        o.setParent(this);//ini shape parent
+        o.setRotation(this.getRotation());//Vector3f.add(o.getRotation(), this.getRotation());
+        this.body.add(o);//add new shape in body
+        //this.spriteSize = new Vector2(o.getWidth(), o.getHeight());//TODO
+        float sumX=0;
+        float sumY=0;
+        float sumZ=0;
+        for(var i: this.body.toArray(new GameObject[0])){
+            sumX+= i.getCenter().getX() + i.getPosition().getX();//compute sum centers X
+            sumY+= i.getCenter().getY() + i.getPosition().getY();;//compute sum centers Y
+            sumZ+= i.getCenter().getZ() + i.getPosition().getZ();;//compute sum centers Z
+        }
+        this.setCenter(new Vector3f(sumX/(this.body.size()), sumY/(this.body.size()), sumZ/(this.body.size())));//ini center
+        this.setPosition(Vector3f.add(this.getPosition(), o.getPosition()));//ini position
+    }
+
     /**Add new element collection on object*/
     public void addAll(Collection<GameObject> o){
-        for(var i : o){
-            add(i);//invoke add single add() for all new shapes in collections
-        }
+        o.forEach(this::add);//invoke add single add() for all new shapes in collections
     }
     public void rotate(Vector3f rotation, Vector3f center){
         this.setRotation(rotation);
@@ -172,5 +199,35 @@ public class ShapeObject extends EngineObject {
 
     public void setRemove(boolean remove) {
         isRemove = remove;
+    }
+
+    public boolean isAddObject() {
+        return isAddObject;
+    }
+
+    public void setAddObject(boolean addObject) {
+        isAddObject = addObject;
+    }
+
+    public boolean isRemoveObject() {
+        return isRemoveObject;
+    }
+
+    public void setRemoveObject(boolean removeObject) {
+        isRemoveObject = removeObject;
+    }
+
+    public void addAllIf() {
+        //this.addBuffer.forEach(this::addIf);//TODO
+        this.getScene().addGameObjectInBufferPermanent(this.addBuffer);
+        this.addBuffer.clear();
+        this.isAddObject = false;
+    }
+
+    public void removeAllIf() {
+        this.removeBuffer.forEach(this::removeIf);
+        this.removeBuffer.forEach(gameObject -> this.getScene().removeGameObjectFromBuffer(gameObject));
+        this.removeBuffer.clear();
+        this.isRemoveObject = false;
     }
 }

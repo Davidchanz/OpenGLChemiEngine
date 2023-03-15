@@ -5,10 +5,10 @@ import org.engine.maths.Vector3f;
 import org.engine.utils.Transformation;
 
 public abstract class EngineObject implements Transform{
-    protected int id;//id
-    protected Vector3f rotation;//rotation
-    protected Vector3f center;//center
-    protected Vector3f position;//position
+    private int id;//id
+    private Vector3f rotation;//rotation
+    private Vector3f center;//center
+    private Vector3f position;//position
     private Scene scene;
 
     public Vector3f getPosition() {

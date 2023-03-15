@@ -30,23 +30,33 @@ public abstract class GameObject extends EngineObject implements Resize {
 
 	public GameObject(){
 		this.isChanged = false;
-		this.normal = new Vector3f(0,0,0);
+		this.setNormal(new Vector3f(0,0,0));
 	}
 
 	public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Mesh mesh) {
 		this();
-		this.position = position;
-		this.rotation = rotation;
-		this.scale = scale;
+		this.setPosition(position);
+		this.setRotation(rotation);
+		this.setScale(scale);
 		this.mesh = mesh;
-		this.center = new Vector3f(0,0,0);
+		this.setCenter(new Vector3f(0,0,0));
 	}
 	public void ini(Vector3f position, Vector3f rotation, Vector3f scale, Mesh mesh) {
-		this.position = position;
-		this.rotation = rotation;
-		this.scale = scale;
+		this.setPosition(position);
+		this.setRotation(rotation);
+		this.setScale(scale);
 		this.mesh = mesh;
-		this.center = new Vector3f(0,0,0);
+		this.computeCenter();
+		this.isChanged = true;
+	}
+
+	public void ini(Vector3f position, Vector3f rotation, Vector3f scale, Vector3f normal, Mesh mesh) {
+		this.setPosition(position);
+		this.setRotation(rotation);
+		this.setScale(scale);
+		this.setNormal(normal);
+		this.mesh = mesh;
+		this.computeCenter();
 		this.isChanged = true;
 	}
 
@@ -57,39 +67,40 @@ public abstract class GameObject extends EngineObject implements Resize {
 	}
 
 	public void build(Vector3f position, Vector3f rotation, Vector3f scale, Vector3f normal, Mesh mesh) {
-		this.position = position;
-		this.rotation = rotation;
-		this.scale = scale;
-		this.normal = normal;
+		this.setPosition(position);
+		this.setRotation(rotation);
+		this.setScale(scale);
+		this.setNormal(normal);
 		this.mesh = mesh;
-		this.center = new Vector3f(0,0,0);
+		this.setCenter(new Vector3f(0,0,0));
 		this.mesh.create();
 	}
 
 	public void build(Vector3f position, Vector3f rotation, Vector3f scale, Mesh mesh) {
-		this.position = position;
-		this.rotation = rotation;
-		this.scale = scale;
-		this.normal = new Vector3f(0,0,0);
+		this.setPosition(position);
+		this.setRotation(rotation);
+		this.setScale(scale);
+		this.setNormal(new Vector3f(0,0,0));
 		this.mesh = mesh;
-		this.center = new Vector3f(0,0,0);
+		this.setCenter(new Vector3f(0,0,0));
 		this.mesh.create();
+	}
+
+	private void computeCenter(){
+		float sumX=0;
+		float sumY=0;
+		float sumZ=0;
+		var vertices = this.getMesh().getVertices();
+		for(var vertex: vertices) {
+			sumX += this.getPosition().getX() + vertex.getPosition().getX();//compute sum centers X
+			sumY += this.getPosition().getY() + vertex.getPosition().getY();//compute sum centers Y
+			sumZ += this.getPosition().getZ() + vertex.getPosition().getZ();//compute sum centers Z
+		}
+		this.setCenter(new Vector3f(sumX/vertices.length, sumY/vertices.length, sumZ/vertices.length));//ini center
 	}
 
 	public void destroy(){
 		this.mesh.destroy();
-	}
-	
-	/*public void update() {
-		position.setZ(position.getZ() - 0.05f);
-	}*/
-
-	public Vector3f getPosition() {
-		return position;
-	}
-
-	public Vector3f getRotation() {
-		return rotation;
 	}
 
 	public Vector3f getScale() {
@@ -99,23 +110,6 @@ public abstract class GameObject extends EngineObject implements Resize {
 	public Mesh getMesh() {
 		return mesh;
 	}
-	public void setRotation(Vector3f rotation){
-		//this.rotation = Vector3f.add(this.rotation, rotation);
-		this.rotation =new Vector3f(rotation);
-	}
-	public void setPosition(Vector3f position){
-		this.position = position;
-	}
-	public void setPositionStraght(Vector3f position){
-		this.position = position;
-	}
-	public void setCenter(Vector3f center){
-		this.center = center;
-	}
-	public Vector3f getCenter() {
-		return center;
-	}
-
 	public ShapeObject getParent() {
 		return parent;
 	}
@@ -154,5 +148,9 @@ public abstract class GameObject extends EngineObject implements Resize {
 
 	public void setChanged(boolean changed) {
 		isChanged = changed;
+	}
+
+	public void setScale(Vector3f scale) {
+		this.scale = scale;
 	}
 }
