@@ -21,14 +21,14 @@ import java.util.TreeMap;
 public class Test {
     public static void main(String[] args) {
 
-        Scene scene = new Scene(800, 800, 800, 800, Color.TRANSPARENT);
+        Scene scene = new Scene(800, 800, 800, 800, Color.WHITE);
         /*for(int i = 0; i < 10; i++){
             ShapeObject o = new ShapeObject();
             o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
             scene.add(o);
         }*/
         ShapeObject circle = new ShapeObject();
-        Circle c = new Circle(200f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/bricks.png");
+        Circle c = new Circle(200f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/Whell.png");
         circle.add(c);
 
         scene.add(circle);
