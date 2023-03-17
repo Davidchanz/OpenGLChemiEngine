@@ -8,11 +8,8 @@ import org.engine.events.GLKeyEvent;
 import org.engine.maths.Vector3f;
 import org.engine.cameras.Camera;
 import org.engine.objects.GameObject;
-import org.engine.shapes.Circle;
-import org.engine.shapes.Dot;
-import org.engine.shapes.Line;
+import org.engine.shapes.*;
 import org.engine.utils.Color;
-import org.engine.shapes.Rectangle;
 import org.engine.objects.ShapeObject;
 
 import javax.swing.*;
@@ -32,7 +29,7 @@ public class Test {
         //scene.setCamera(new FirstPerson3DCamera());
 
         ShapeObject circle = new ShapeObject();
-        Dot c = new Dot(new Vector3f(0,0,0), Color.RED);
+        Triangle c = new Triangle(100f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/beautiful.png");
        /* Line c1 = new Line(new Vector3f(0,0,0), new Vector3f(0,800,0), Color.BLUE);
         Line c2 = new Line(new Vector3f(0,0,0), new Vector3f(0,0,800), Color.GREEN);*/
 

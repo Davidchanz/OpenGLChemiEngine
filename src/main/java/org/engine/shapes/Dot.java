@@ -16,13 +16,13 @@ public class Dot extends GameObject {
         this.setColor(color);
         this.setWidth(1);
         this.setHeight(1);
-
+        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
         ArrayList<Vertex> result = new ArrayList<>();
         result.add(new Vertex(
                 new Vector3f(
-                        position.getX()/ Scene.WIDTH,
-                        position.getY()/Scene.HEIGHT,
-                        position.getZ()/Scene.WIDTH
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ()
                 ),
                 new Vector2f(
                         0.5f,
@@ -35,7 +35,7 @@ public class Dot extends GameObject {
                         //Back face
                         0
                 });
-        this.ini(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), mesh);
+        this.ini(pos, new Vector3f(0,0,0), new Vector3f(1,1,1), mesh);
     }
 
     @Override

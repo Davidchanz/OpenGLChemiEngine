@@ -148,13 +148,13 @@ public class Scene implements Runnable{
     }
 
     private void updateInvisibleObjects() {
-        this.busy.set(true);
+       // this.busy.set(true);
 
         new Thread(()->{
             this.invisibleGameObjects.parallelStream().forEach(this::ifUpdateShapeObject);
         }).start();
 
-        this.busy.set(false);
+       // this.busy.set(false);
     }
 
     private void updateVisibility() {
@@ -162,10 +162,10 @@ public class Scene implements Runnable{
             this.busy.set(true);
 
             this.gameObjects.removeAll(this.invisibleObjectsBuffer);
-            //this.invisibleGameObjects.addAll(this.invisibleObjectsBuffer);
+            this.invisibleGameObjects.addAll(this.invisibleObjectsBuffer);
             this.invisibleObjectsBuffer.clear();
 
-            //this.invisibleGameObjects.removeAll(this.visibleObjectsBuffer);
+            this.invisibleGameObjects.removeAll(this.visibleObjectsBuffer);
             this.gameObjects.addAll(this.visibleObjectsBuffer);
             this.visibleObjectsBuffer.clear();
 
@@ -411,7 +411,7 @@ public class Scene implements Runnable{
     private void addGameObjectInBufferNow(GameObject gameObject){
         if(/*gameObject.getParent() != null && */!gameObject.getParent().isBuffered())
             return;
-        var sceneCoord = new Vector3f(gameObject.getCenter());
+        var sceneCoord = new Vector3f(gameObject.getPosition());
         sceneCoord = Scene.toGLDimension(sceneCoord);
         sceneCoord = Scene.toScreenDimension(sceneCoord);
         var parent = gameObject.getParent();
@@ -440,7 +440,7 @@ public class Scene implements Runnable{
         if(!object.isBuffered())
             return;
         for(var gameObject: object.body) {
-            var sceneCoord = new Vector3f(gameObject.getCenter());
+            var sceneCoord = new Vector3f(gameObject.getPosition());
             sceneCoord = Scene.toGLDimension(sceneCoord);
             sceneCoord = Scene.toScreenDimension(sceneCoord);
             for (int x = (int) sceneCoord.getX() - (int) object.getSpriteSize().x; x <= (int) sceneCoord.getX() + (int) object.getSpriteSize().x; x++) {
