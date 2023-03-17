@@ -8,6 +8,7 @@ import org.engine.events.GLKeyEvent;
 import org.engine.maths.Vector3f;
 import org.engine.cameras.Camera;
 import org.engine.objects.GameObject;
+import org.engine.shapes.Circle;
 import org.engine.utils.Color;
 import org.engine.shapes.Rectangle;
 import org.engine.objects.ShapeObject;
@@ -21,14 +22,27 @@ public class Test {
     public static void main(String[] args) {
 
         Scene scene = new Scene(800, 800, 800, 800, Color.TRANSPARENT);
-        for(int i = 0; i < 10; i++){
+        /*for(int i = 0; i < 10; i++){
             ShapeObject o = new ShapeObject();
             o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
             scene.add(o);
-        }
+        }*/
+        ShapeObject circle = new ShapeObject();
+        Circle c = new Circle(200f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/bricks.png");
+        circle.add(c);
+
+        scene.add(circle);
+        System.out.println(circle.getCenter());
+
+        Timer t = new Timer(15, actionEvent -> {
+            //circle.move(new Vector3f(1,0,0));
+                circle.rotate(new Vector3f(0,0,circle.getRotation().getZ()+1), new Vector3f(0,0,0));
+            }
+        );
+        t.start();
+
+
         scene.start();
-
-
         /*TreeMap<Integer, ShapeObject[][]> objectFields = new TreeMap<>();
 
         for (int i = 0; i < 5; i++){
