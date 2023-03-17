@@ -1,6 +1,7 @@
 package org.engine.graphics;
 
 import org.engine.shapes.Circle;
+import org.engine.shapes.Dot;
 import org.engine.shapes.Line;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -46,6 +47,8 @@ public class Renderer {
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, object.getMesh().getVertices().length+2);
 		} else if (object instanceof Line) {
 			GL11.glDrawArrays(GL11.GL_LINES, 0, 2);
+		} else if (object instanceof Dot) {
+			GL11.glDrawArrays(GL11.GL_POINTS, 0, 1);
 		} else
 			GL11.glDrawElements(GL11.GL_TRIANGLES, object.getMesh().getIndices().length, GL11.GL_UNSIGNED_INT, 0);
 

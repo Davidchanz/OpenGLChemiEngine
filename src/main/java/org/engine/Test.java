@@ -9,6 +9,7 @@ import org.engine.maths.Vector3f;
 import org.engine.cameras.Camera;
 import org.engine.objects.GameObject;
 import org.engine.shapes.Circle;
+import org.engine.shapes.Dot;
 import org.engine.shapes.Line;
 import org.engine.utils.Color;
 import org.engine.shapes.Rectangle;
@@ -28,16 +29,16 @@ public class Test {
             o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
             scene.add(o);
         }*/
-        scene.setCamera(new FirstPerson3DCamera());
+        //scene.setCamera(new FirstPerson3DCamera());
 
         ShapeObject circle = new ShapeObject();
-        Line c = new Line(new Vector3f(0,0,0), new Vector3f(800,0,0), Color.RED, "src/main/resources/textures/Whell.png");
-        Line c1 = new Line(new Vector3f(0,0,0), new Vector3f(0,800,0), Color.BLUE, "src/main/resources/textures/Whell.png");
-        Line c2 = new Line(new Vector3f(0,0,0), new Vector3f(0,0,800), Color.GREEN, "src/main/resources/textures/Whell.png");
+        Dot c = new Dot(new Vector3f(0,0,0), Color.RED);
+       /* Line c1 = new Line(new Vector3f(0,0,0), new Vector3f(0,800,0), Color.BLUE);
+        Line c2 = new Line(new Vector3f(0,0,0), new Vector3f(0,0,800), Color.GREEN);*/
 
         circle.add(c);
-        circle.add(c1);
-        circle.add(c2);
+        /*circle.add(c1);
+        circle.add(c2);*/
 
         scene.add(circle);
         System.out.println(circle.getCenter());
