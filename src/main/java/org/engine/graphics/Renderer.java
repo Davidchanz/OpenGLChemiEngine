@@ -1,6 +1,7 @@
 package org.engine.graphics;
 
 import org.engine.shapes.Circle;
+import org.engine.shapes.Line;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
@@ -43,7 +44,9 @@ public class Renderer {
 		var b = shader.setUniform("back", Matrix4f.translate(object.getParent().getPosition()));
 		if(object instanceof Circle) {
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, object.getMesh().getVertices().length+2);
-		}else
+		} else if (object instanceof Line) {
+			GL11.glDrawArrays(GL11.GL_LINES, 0, 2);
+		} else
 			GL11.glDrawElements(GL11.GL_TRIANGLES, object.getMesh().getIndices().length, GL11.GL_UNSIGNED_INT, 0);
 
 		shader.unbind();

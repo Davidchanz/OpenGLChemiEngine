@@ -9,6 +9,7 @@ import org.engine.maths.Vector3f;
 import org.engine.cameras.Camera;
 import org.engine.objects.GameObject;
 import org.engine.shapes.Circle;
+import org.engine.shapes.Line;
 import org.engine.utils.Color;
 import org.engine.shapes.Rectangle;
 import org.engine.objects.ShapeObject;
@@ -21,22 +22,29 @@ import java.util.TreeMap;
 public class Test {
     public static void main(String[] args) {
 
-        Scene scene = new Scene(800, 800, 800, 800, Color.WHITE);
+        Scene scene = new Scene(800, 800, 800, 800, Color.TRANSPARENT);
         /*for(int i = 0; i < 10; i++){
             ShapeObject o = new ShapeObject();
             o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
             scene.add(o);
         }*/
+        scene.setCamera(new FirstPerson3DCamera());
+
         ShapeObject circle = new ShapeObject();
-        Circle c = new Circle(200f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/Whell.png");
+        Line c = new Line(new Vector3f(0,0,0), new Vector3f(800,0,0), Color.RED, "src/main/resources/textures/Whell.png");
+        Line c1 = new Line(new Vector3f(0,0,0), new Vector3f(0,800,0), Color.BLUE, "src/main/resources/textures/Whell.png");
+        Line c2 = new Line(new Vector3f(0,0,0), new Vector3f(0,0,800), Color.GREEN, "src/main/resources/textures/Whell.png");
+
         circle.add(c);
+        circle.add(c1);
+        circle.add(c2);
 
         scene.add(circle);
         System.out.println(circle.getCenter());
 
         Timer t = new Timer(15, actionEvent -> {
             //circle.move(new Vector3f(1,0,0));
-                circle.rotate(new Vector3f(0,0,circle.getRotation().getZ()+1), new Vector3f(0,0,0));
+                //circle.rotate(new Vector3f(circle.getRotation().getX()+1,circle.getRotation().getY()+0,circle.getRotation().getZ()+0), new Vector3f(0,0,0));
             }
         );
         t.start();
