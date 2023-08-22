@@ -34,6 +34,11 @@ public class Renderer {
 		//if(object.isTextured()) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL13.glBindTexture(GL11.GL_TEXTURE_2D, object.getMesh().getMaterial().getTextureID());
+		//GL13.glHint(GL13.GL_PERSPECTIVE_CORRECTION_HINT, GL13.GL_NICEST);
+
+		//GL13.glTexParameteri(GL13.GL_TEXTURE_2D, GL13.GL_TEXTURE_MIN_FILTER, GL13.GL_NEAREST);
+		//GL13.glTexParameteri(GL13.GL_TEXTURE_2D, GL13.GL_TEXTURE_MAG_FILTER, GL13.GL_NEAREST);
+		//GL30.glGenerateMipmap(object.getMesh().getMaterial().getTextureID());
 		//}
 		//activeTextures(object);
 

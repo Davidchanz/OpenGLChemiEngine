@@ -18,21 +18,21 @@ public class Circle extends GameObject {
         this.setWidth(radius);
         this.setHeight(radius);
         radius = radius/Scene.WIDTH;
-        Vector3f pos = new Vector3f(position.getX()/ Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
+        Vector3f pos = new Vector3f(position.getX()/ Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ());
         int fragments = 36;
         ArrayList<Vertex> result = new ArrayList<>();
         float increment = 2.0f * (float)Math.PI / fragments;
         for (float currAngle = 0.0f; currAngle <= 2.0f * Math.PI; currAngle += increment) {
-            float t = 0.5f;
-            float s = -0.1f;
+            float start = 0.5f;
+            float scale = 0.5f;
             result.add(new Vertex(
                     new Vector3f(
                             radius * (float)Math.cos(currAngle) /*+ x*/,
                             radius * (float)Math.sin(currAngle) /*+ y*/,
                             0),
                     new Vector2f(
-                            s+t + t * (float)Math.cos(currAngle),
-                            s+t - t * (float)Math.sin(currAngle)
+                            start + scale * (float)Math.cos(currAngle),
+                            start - scale * (float)Math.sin(currAngle)
                     ),
                     color));
         }
@@ -49,22 +49,21 @@ public class Circle extends GameObject {
         this.setWidth(radius);
         this.setHeight(radius);
         radius = radius/Scene.WIDTH;
-        Vector3f pos = new Vector3f(position.getX()/ Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
+        Vector3f pos = new Vector3f(position.getX()/ Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ());
         int fragments = 36;
         ArrayList<Vertex> result = new ArrayList<>();
         float increment = 2.0f * (float)Math.PI / fragments;
         for (float currAngle = 0.0f; currAngle <= 2.0f * Math.PI; currAngle += increment)
         {
-            float t = 0.5f;
-            float s = -0.1f;
+            float scale = 0.5f;
             result.add(new Vertex(
                     new Vector3f(
                             radius * (float)Math.cos(currAngle),
                             radius * (float)Math.sin(currAngle),
                             0),
                     new Vector2f(
-                            s+t + t * (float)Math.cos(currAngle),
-                            s+t - t * (float)Math.sin(currAngle)
+                            0.5f + scale * (float)Math.cos(currAngle),
+                            0.5f - scale * (float)Math.sin(currAngle)
                     ),
                     color));
         }

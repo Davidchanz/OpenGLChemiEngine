@@ -95,7 +95,7 @@ public class Window {
 	
 	public void update() {
 		if (isResized) {
-			GL11.glViewport(0, 0, width, height);
+			//GL11.glViewport(0, 0, width, height);
 			isResized = false;
 		}
 		//GL11.glClearColor(0.07f, 0.13f, 0.17f, 1.0f);

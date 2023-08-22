@@ -25,7 +25,7 @@ public class Triangle extends GameObject {
 
     public Triangle(Vector3f P0, Vector3f P1, Vector3f P2, Vector3f position, Color color, String texturePath){
         this.setColor(color);
-        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
+        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ());
         Mesh mesh = new Mesh(new Vertex[] {
                 //Back face
                 new Vertex(P0, new Vector2f(0.0f, 1.0f), color),
@@ -41,7 +41,7 @@ public class Triangle extends GameObject {
 
     public Triangle(Vector3f P0, Vector3f P1, Vector3f P2, Vector3f position, Color color){
         this.setColor(color);
-        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
+        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ());
         Mesh mesh = new Mesh(new Vertex[] {
                 //Back face
                 new Vertex(P0, new Vector2f(0.0f, 1.0f), color),

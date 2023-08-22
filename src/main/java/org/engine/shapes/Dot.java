@@ -16,7 +16,7 @@ public class Dot extends GameObject {
         this.setColor(color);
         this.setWidth(1);
         this.setHeight(1);
-        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ()/Scene.WIDTH);
+        Vector3f pos = new Vector3f(position.getX()/Scene.WIDTH, position.getY()/Scene.HEIGHT, position.getZ());
         ArrayList<Vertex> result = new ArrayList<>();
         result.add(new Vertex(
                 new Vector3f(

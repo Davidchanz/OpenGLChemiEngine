@@ -20,7 +20,7 @@ import java.util.TreeMap;
 public class Test {
     public static void main(String[] args) {
 
-        Scene scene = new Scene(800, 800, 800, 800, Color.TRANSPARENT);
+        Scene scene = new Scene(800, 800, 800, 800, Color.ALICEBLUE);
         /*for(int i = 0; i < 10; i++){
             ShapeObject o = new ShapeObject();
             o.add(new Rectangle(10, new Vector3f(i*11,0,0), Color.RED));
@@ -29,11 +29,14 @@ public class Test {
         //scene.setCamera(new FirstPerson3DCamera());
 
         ShapeObject circle = new ShapeObject();
-        Triangle c = new Triangle(100f, new Vector3f(0,0,0), Color.WHITE, "src/main/resources/textures/beautiful.png");
+        Circle c = new Circle(200f, new Vector3f(0,0,0f), Color.WHITE, "src/main/resources/textures/ant.png");
+        //Rectangle r= new Rectangle(100f, new Vector3f(-100,0,0f), Color.RED, "src/main/resources/textures/test2.png");
        /* Line c1 = new Line(new Vector3f(0,0,0), new Vector3f(0,800,0), Color.BLUE);
         Line c2 = new Line(new Vector3f(0,0,0), new Vector3f(0,0,800), Color.GREEN);*/
 
         circle.add(c);
+        //circle.add(r);
+        //c.setRotation(new Vector3f(0,0,45));
         /*circle.add(c1);
         circle.add(c2);*/
 
@@ -42,7 +45,7 @@ public class Test {
 
         Timer t = new Timer(15, actionEvent -> {
             //circle.move(new Vector3f(1,0,0));
-                //circle.rotate(new Vector3f(circle.getRotation().getX()+1,circle.getRotation().getY()+0,circle.getRotation().getZ()+0), new Vector3f(0,0,0));
+                circle.rotate(new Vector3f(circle.getRotation().getX()+0,circle.getRotation().getY()+0,circle.getRotation().getZ()+1), new Vector3f(0,0,0));
             }
         );
         t.start();
